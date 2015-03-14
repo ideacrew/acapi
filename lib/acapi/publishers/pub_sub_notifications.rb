@@ -3,7 +3,7 @@ module Acapi
 
     # handle different attachments of publishers to a model
     class PubSubNotifications
-      include ::Publisher
+      include ::Acapi::Publisher
   
       attr_reader :publishers_info, :model
   
@@ -13,7 +13,7 @@ module Acapi
       end
   
       def attach_publisher(namespace, publisher_name)
-        publishers_info[namespace] ||= Publishers::NotificationsQueue.new(publisher_name)
+        publishers_info[namespace] ||= Acapi::Publishers::NotificationsQueue.new(publisher_name)
         true
       end
   

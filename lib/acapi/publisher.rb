@@ -10,7 +10,6 @@ module Acapi
       self.pub_sub_namespace = nil
     end
 
-
     # Publish passed event using ActiveSupport::Notifications (ASN)
     def broadcast_event(event_name, payload={})
       if block_given?
@@ -21,7 +20,6 @@ module Acapi
         ActiveSupport::Notifications.instrument(event_name, payload)
       end
     end
-
 
     module ClassMethods
       # delegate to ASN

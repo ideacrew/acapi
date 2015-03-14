@@ -4,13 +4,13 @@ module Acapi
 
       ## Event subscribers
       # Log events
-      # Subscribers::EnterpriseLogger.attach_to('log')    
+      # Acapi::Subscribers::EnterpriseLogger.attach_to('log')    
 
       # Enrollment events
-      # Subscribers::NoticeMailer.attach_to('notice')
+      # Acapi::Subscribers::NoticeMailer.attach_to('notice')
 
       # EDI events
-      # Subscribers::EdiEvent.attach_to('edi')
+      # Acapi::Subscribers::EdiEvent.attach_to('edi')
 
     end
   end

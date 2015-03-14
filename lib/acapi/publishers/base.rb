@@ -1,20 +1,20 @@
 module Acapi
   module Publishers
 
-  # Hook into model callback chain when a publisher is attached to a model 
-  # capture changes before_save and publish in after_save
-  # start publishing created and destroyed notification
-
+    # Hook into model callback chain: 
+    #   capture changes using before_save, and publish using after_save
+    #   start publishing created and destroyed notification
     module Base
       extend ActiveSupport::Concern
 
       # inject a reader to handle notifications for model in namespaces
       def pub_sub_notifications
-        @pub_sub_notifications ||= ::Publishers::PubSubNotifications.new(self)
+        @pub_sub_notifications ||= ::Acapi::Publishers::PubSubNotifications.new(self)
       end
 
       module ClassMethods
         def attach_publisher(namespace, publisher_class)
+
           # attach publisher to model class
           after_initialize do |model|
             model.pub_sub_notifications.attach_publisher(namespace, publisher_class)
