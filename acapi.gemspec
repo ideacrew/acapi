@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Acapi::VERSION
   spec.authors       = ["Dan Thomas"]
   spec.email         = ["dan.thomas@dc.gov"]
-  spec.summary       = %q{Enterprise communication onramp to Affordable Care Act API}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Enterprise communication onramp to Affordable Care Act API (ACApi)}
+  spec.description   = %q{Publish and subscribe to ACApi cross-application events, services and logging.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
