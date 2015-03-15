@@ -3,7 +3,6 @@ module Acapi
 
     # handle different attachments of publishers to a model
     class PubSubNotifications
-      include ::Acapi::Publisher
   
       attr_reader :publishers_info, :model
   

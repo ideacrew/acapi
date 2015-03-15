@@ -1,3 +1,6 @@
+require "acapi/publishers/notifications_queue"
+require "acapi/publishers/pub_sub_notifications"
+
 module Acapi
   module Publisher
     extend ::ActiveSupport::Concern

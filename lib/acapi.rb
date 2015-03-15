@@ -1,9 +1,9 @@
+require "acapi/version"
 require "active_support"
 
-require "acapi/version"
-require "acapi/publishers"
-require "acapi/subscribers"
-
+require "acapi/config"
+require "acapi/publisher"
+require "acapi/subscriber"
 
 module Acapi
 
