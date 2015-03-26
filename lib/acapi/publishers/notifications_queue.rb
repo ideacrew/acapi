@@ -6,6 +6,7 @@ module Acapi
       attr_reader :publisher, :notifications
   
       def initialize(publisher_name)
+        # this is a problem Family.new
         @publisher = publisher_name.to_s.constantize.new
         @notifications = []
       end

@@ -37,8 +37,7 @@ module Acapi
             model.pub_sub_notifications.publish_notifications(namespace)
           end
         end
-      end
-
+      end 
     end
   end
 end

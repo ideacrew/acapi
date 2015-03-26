@@ -1,11 +1,12 @@
 module Acapi
-  module Subscribers
+  module Subscribers 
+    class EnterpriseLogger < ::Acapi::Subscribers::Base 
+      def forward_event(event) 
+        Acapi::Subscribers::EnterpriseLogger.log(event.payload[:log])
+      end
 
-    class EnterpriseLogger < ::Acapi::Subscribers::Base
-
-      def forward_event(event)
-
-        Acapi::EnterpriseLogger.log(event.payload[:person])
+      def self.log(data)
+        puts data
       end
     end
 

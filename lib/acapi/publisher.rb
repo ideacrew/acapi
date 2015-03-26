@@ -2,7 +2,7 @@ require "acapi/publishers/notifications_queue"
 require "acapi/publishers/pub_sub_notifications"
 
 module Acapi
-  module Publisher
+  module Publishers
     extend ::ActiveSupport::Concern
     extend self
 
