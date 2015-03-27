@@ -1,9 +1,9 @@
 module Acapi
   module Publishers
-    module Family
+    module CorpLogger
 
-      def prepare_notifications(namespace, plan)
-         plan.pub_sub_notifications.add_notification(namespace, "forward_event", log: "this is custom data") 
+      def corp_logger(msg)
+        Acapi::Publishers.broadcast_event("logger", plan: msg)
       end
 
 
