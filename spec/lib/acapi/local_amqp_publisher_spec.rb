@@ -1,9 +1,6 @@
 require 'spec_helper'
 
-describe "on application start" do
-  it "initializes a pool of connections to the local AMQP broker"
-end
-
-describe "when an event is published" do
-  it "places that event in a persistent storage queue on the local broker"
+describe "on initialization" do
+  it "should establish a connection pool to the local broker"
+  it "should establish a persistent queue on the local broker"
 end

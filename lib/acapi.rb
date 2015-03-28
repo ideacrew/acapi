@@ -12,3 +12,5 @@ module Acapi
   end
 
 end
+
+require "acapi/railties/local_amqp_publisher" if defined?(Rails)
