@@ -5,6 +5,8 @@ require "acapi/config"
 require "acapi/publisher"
 require "acapi/subscriber"
 
+require "acapi/local_amqp_publisher"
+
 module Acapi
 
   def configure
