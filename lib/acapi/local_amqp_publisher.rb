@@ -18,14 +18,17 @@ module Acapi
     end
 
     def self.boot!
-      @@instance = self.new
+      conn = Bunny.new
+      conn.start
+      ch = conn.create_channel
+      queue = ch.queue(QUEUE_NAME, {:persistent => true})
+      @@instance = self.new(conn, ch, queue)
     end
 
-    def initialize
-      @connection = Bunny.new
-      @connection.start
-      @channel = @connection.create_channel
-      @queue = @channel.queue(QUEUE_NAME, {:persistent => true})
+    def initialize(conn, ch, queue)
+      @connection = conn
+      @channel = ch
+      @queue = queue
     end
 
     def log(name, started, finished, unique_id, data)
