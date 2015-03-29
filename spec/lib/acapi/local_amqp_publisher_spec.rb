@@ -1,11 +1,12 @@
 require 'spec_helper'
 
 describe Acapi::LocalAmqpPublisher do
+  let(:forwarding_queue_name) { "acapi.events.local" }
+
   describe "on initialization" do
     let(:session) { instance_double("Bunny::Session") }
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
-    let(:forwarding_queue_name) { "acapi.events.local" }
 
     before :each do
       allow(Bunny).to receive(:new).and_return(session)
@@ -35,6 +36,19 @@ describe Acapi::LocalAmqpPublisher do
   end
 
   describe "that can support unicorn" do
-    it "supports reconnection for after_fork"
+    let(:session) { instance_double("Bunny::Session") }
+    let(:channel) { instance_double("Bunny::Channel") }
+    let(:queue) { instance_double("Bunny::Queue") }
+    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue) }
+
+    it "supports reconnection for after_fork" do
+      expect(session).to receive(:close)
+      expect(Bunny).to receive(:new).and_return(session)
+      expect(session).to receive(:start)
+      expect(session).to receive(:create_channel).and_return(channel)
+      expect(channel).to receive(:queue).with(forwarding_queue_name, {:persistent => true}).and_return(queue)
+      subject.reconnect!
+    end
+      
   end
 end
