@@ -28,7 +28,7 @@ module Acapi
       @queue = @channel.queue(QUEUE_NAME, {:persistent => true})
     end
 
-    def log(*args)
+    def log(name, started, finished, unique_id, data)
     end
   end
 end
