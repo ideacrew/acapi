@@ -14,7 +14,7 @@ module Acapi
         end
       end
 
-      def self.lookup_publisher_configuration(app)
+      def lookup_publisher_configuration(app)
         r_config = app.config
         return nil unless r_config.respond_to?(:acapi)
         acapi_config = r_config.acapi
@@ -22,15 +22,15 @@ module Acapi
         acapi_config.publish_amqp_events
       end
 
-      def self.warn_settings_not_specified
+      def warn_settings_not_specified
         Rails.logger.info "No setting specified for 'acapi.publish_amqp_events' - disabling publishing of events to local AMQP instance'"
       end
 
-      def self.boot_local_publisher
+      def boot_local_publisher
         ::Acapi::LocalAmqpPublisher.boot!
       end
 
-      def self.disable_local_publisher
+      def disable_local_publisher
         ::Acapi::LocalAmqpPublisher.disable!
       end
     end
