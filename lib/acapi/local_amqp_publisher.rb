@@ -33,5 +33,9 @@ module Acapi
 
     def log(name, started, finished, unique_id, data)
     end
+
+    def self.log(name, started, finished, unique_id, data)
+      instance.log(name, started, finished, unique_id, data)     
+    end
   end
 end
