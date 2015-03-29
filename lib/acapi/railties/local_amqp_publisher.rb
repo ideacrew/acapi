@@ -3,7 +3,6 @@ module Acapi
     class LocalAmqpPublisher < Rails::Railtie
 
       initializer "local_amqp_publisher_railtie.configure_rails_initialization" do |app|
-        # TODO: Configure local event publishing client
         publish_enabled = lookup_publisher_configuration(app)
         if publish_enabled.blank?
           warn_settings_not_specified
