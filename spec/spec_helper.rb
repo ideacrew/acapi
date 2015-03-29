@@ -1,2 +1,2 @@
-require 'pry'
-require 'Acapi'
+require 'acapi'
+require 'byebug'

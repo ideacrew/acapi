@@ -40,15 +40,14 @@ module Acapi
   
       def publish_notifications(namespace)
         publishers_info[namespace].notifications.each do |notification|
-          broadcast_event(
+          ::Acapi::Publishers.broadcast_event(
               [namespace, notification[:event_name]].compact.join('.'),
               notification[:payload].merge(model: model)
           )
         end
   
         return true
-      end
-  
+      end 
     end
   end
 end
