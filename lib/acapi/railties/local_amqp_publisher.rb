@@ -4,7 +4,7 @@ module Acapi
 
       initializer "local_amqp_publisher_railtie.configure_rails_initialization" do |app|
         # TODO: Configure local event publishing client
-        publish_enabled = app.config.acapi.publish_amqp_events
+        publish_enabled = lookup_publisher_configuration(app)
         if publish_enabled.blank?
           warn_settings_not_specified
         end
@@ -13,6 +13,14 @@ module Acapi
         else
           disable_local_publisher
         end
+      end
+
+      def self.lookup_publisher_configuration(app)
+        r_config = app.config
+        return nil unless r_config.respond_to?(:acapi)
+        acapi_config = r_config.acapi
+        return nil unless acapi_config.respond_to?(:publish_amqp_events)
+        acapi_config.publish_amqp_events
       end
 
       def self.warn_settings_not_specified
