@@ -7,6 +7,13 @@ module Acapi
     class DoNothingPublisher
       def log(*args)
       end
+
+      def format_log_message
+
+      end
+
+      def reconnect!
+      end
     end
 
     def self.instance
@@ -32,6 +39,13 @@ module Acapi
     end
 
     def log(name, started, finished, unique_id, data)
+    end
+
+    def reconnect!
+    end
+
+    def self.reconnect!
+      instance.reconnect!
     end
 
     def self.log(name, started, finished, unique_id, data)
