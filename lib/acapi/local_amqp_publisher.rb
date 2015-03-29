@@ -6,10 +6,7 @@ module Acapi
 
     class DoNothingPublisher
       def log(*args)
-      end
-
-      def format_log_message
-
+        Rails.logger.info "Acapi::LocalAmqpPublisher - Logging subscribed event:\n#{args.inspect}"
       end
 
       def reconnect!
