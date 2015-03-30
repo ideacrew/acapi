@@ -1,16 +1,11 @@
 module Acapi
   module Subscribers 
-    module CorpLogger
+    module Logger
       def self.register(event_name)
         ActiveSupport::Notifications.subscribe event_name do |*args|
           event = ActiveSupport::Notifications::Event.new(*args)
-          puts event.name
-          puts event.time
-          puts event.end
-          puts event.duration
-          puts event.transaction_id
-          puts event.payload
-          event.payload[:blk].call
+          event.payload[:blk].call if event.payload[:blk]
+          Acapi::LocalAmqpPublisher.log(event.name, event.time, event.end, event.transaction_id, event.payload)
         end
       end 
     end 
