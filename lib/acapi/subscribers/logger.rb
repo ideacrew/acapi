@@ -7,7 +7,7 @@ module Acapi
           event.payload[:blk].call if event.payload[:blk]
           Acapi::LocalAmqpPublisher.log(event.name, event.time, event.end, event.transaction_id, event.payload)
         end
-      end 
+      end
     end 
   end
 end
