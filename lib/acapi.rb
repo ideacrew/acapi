@@ -15,4 +15,5 @@ module Acapi
 
 end
 
+require "acapi/railties/amqp_configuration_options" if defined?(Rails)
 require "acapi/railties/local_amqp_publisher" if defined?(Rails)

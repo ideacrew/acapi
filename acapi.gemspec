@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry"
   spec.add_development_dependency "pry-remote"
   spec.add_development_dependency "pry-nav"
-
+  spec.add_development_dependency "rails", "> 4.2"
 end

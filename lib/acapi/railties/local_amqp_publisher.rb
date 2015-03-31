@@ -5,13 +5,6 @@ module Acapi
   
 end
 
-class Rails::Application::Configuration < Rails::Engine::Configuration
-  def acapi
-    @acapi ||= ::Acapi::ConfigurationSettings.new
-  end
-end
-
-
 module Acapi
   module Railties
     class LocalAmqpPublisher < Rails::Railtie
