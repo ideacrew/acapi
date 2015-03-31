@@ -6,6 +6,17 @@ module Acapi
 
     class DoNothingPublisher
       def log(*args)
+      end
+
+      def reconnect!
+      end
+
+      def disconnect!
+      end
+    end
+
+    class LoggingPublisher 
+      def log(*args)
         Rails.logger.info "Acapi::LocalAmqpPublisher - Logging subscribed event:\n#{args.inspect}"
       end
 
@@ -18,6 +29,13 @@ module Acapi
 
     def self.instance
       @@instance
+    end
+
+    def self.logging!
+      if @@instance
+        @@instance.disconnect!
+      end
+      @@instance = LoggingPublisher.new
     end
 
     def self.disable!
