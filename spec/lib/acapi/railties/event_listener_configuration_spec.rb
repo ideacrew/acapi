@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+require 'acapi/railties/local_amqp_publisher'
 require 'acapi/railties/amqp_configuration_options'
 
 shared_examples "an acapi amqp configuration" do |args|
@@ -12,6 +13,5 @@ shared_examples "an acapi amqp configuration" do |args|
 end
 
 describe "with the proper rails configuration options" do
-  it_behaves_like "an acapi amqp configuration", [:remote_broker_uri, :remote_event_queue, :remote_request_exchange]
-
+  it_behaves_like "an acapi amqp configuration", [:remote_broker_uri, :remote_event_queue, :remote_request_exchange, :app_id]
 end

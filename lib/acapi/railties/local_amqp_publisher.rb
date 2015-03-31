@@ -1,6 +1,6 @@
 module Acapi
   class ConfigurationSettings
-    attr_accessor :publish_amqp_events
+    attr_accessor :publish_amqp_events, :app_id
   end
   
 end

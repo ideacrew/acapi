@@ -19,12 +19,12 @@ describe Acapi::LocalAmqpPublisher do
       expect(Bunny).to receive(:new).and_return(session)
       expect(session).to receive(:start)
       expect(session).to receive(:create_channel).and_return(channel)
-      ::Acapi::LocalAmqpPublisher.boot!
+      ::Acapi::LocalAmqpPublisher.boot!("")
     end
 
     it "should establish a persistent queue on the local broker" do
       expect(channel).to receive(:queue).with(forwarding_queue_name, {:persistent => true}).and_return(queue)
-      ::Acapi::LocalAmqpPublisher.boot!
+      ::Acapi::LocalAmqpPublisher.boot!("")
     end
   end
 
@@ -32,7 +32,8 @@ describe Acapi::LocalAmqpPublisher do
     let(:session) { instance_double("Bunny::Session") }
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
-    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue) }
+    let(:app_id) { "my app" }
+    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, app_id) }
 
     let(:event_name) { "acapi.individual.created" }
     let(:started_at) { double }
@@ -86,7 +87,7 @@ describe Acapi::LocalAmqpPublisher do
     let(:session) { instance_double("Bunny::Session") }
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
-    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue) }
+    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, "") }
 
     it "supports reconnection for after_fork" do
       expect(session).to receive(:close)

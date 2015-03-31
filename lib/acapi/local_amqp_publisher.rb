@@ -11,6 +11,9 @@ module Acapi
 
       def reconnect!
       end
+
+      def disconnect!
+      end
     end
 
     def self.instance
@@ -18,18 +21,22 @@ module Acapi
     end
 
     def self.disable!
+      if @@instance
+        @@instance.disconnect!
+      end
       @@instance = DoNothingPublisher.new
     end
 
-    def self.boot!
+    def self.boot!(app_id)
       conn = Bunny.new
       conn.start
       ch = conn.create_channel
       queue = ch.queue(QUEUE_NAME, {:persistent => true})
-      @@instance = self.new(conn, ch, queue)
+      @@instance = self.new(conn, ch, queue, app_id)
     end
 
-    def initialize(conn, ch, queue)
+    def initialize(conn, ch, queue, app_id)
+      @app_id = app_id
       @connection = conn
       @channel = ch
       @queue = queue
@@ -41,6 +48,7 @@ module Acapi
       body_data = body_data.nil? ? "" : body_data.to_s
       message_props = {
         :routing_key => name.sub(/\Aacapi\./, ""),
+        :app_id => @app_id,
         :headers => {
           :submitted_timestamp => finished
         }.merge(data)
@@ -49,11 +57,15 @@ module Acapi
     end
 
     def reconnect!
-      @connection.close
+      disconnect!
       @connection = Bunny.new
       @connection.start
       @channel = @connection.create_channel
       @queue = @channel.queue(QUEUE_NAME, {:persistent => true})
+    end
+
+    def disconnect!
+      @connection.close
     end
 
     def self.reconnect!
