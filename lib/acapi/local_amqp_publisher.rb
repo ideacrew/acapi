@@ -69,6 +69,8 @@ module Acapi
 
     def log(name, started, finished, unique_id, data = {})
       message_data = data.dup
+      byebug
+      puts data
       body_data = message_data.delete(:body)
       body_data = body_data.nil? ? "" : body_data.to_s
       message_props = {
