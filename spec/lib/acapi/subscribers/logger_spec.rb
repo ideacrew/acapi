@@ -22,5 +22,15 @@ describe Acapi::Subscribers::Logger do
       Acapi::Subscribers::Logger.register("acapi.logger") 
       expect{logger("hello")}.to raise_error 
     end
+
+    it "pushed message to the right queue" do 
+      Acapi::LocalAmqpPublisher.boot!
+      Acapi::LocalAmqpPublisher.instance.instance_variable_get(:@queue).subscribe do |delivery_info, metadata, payload|
+        expect(payload).to eq "hello"
+      end
+
+      Acapi::Subscribers::Logger.register("acapi.logger") 
+      logger("hello")
+    end
   end
 end

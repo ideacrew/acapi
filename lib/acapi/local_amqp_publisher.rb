@@ -3,6 +3,7 @@ require 'bunny'
 module Acapi
   class LocalAmqpPublisher
     QUEUE_NAME = "acapi.events.local"
+    TOPIC_NAME = "acapi.topic.local"
 
     class DoNothingPublisher
       def log(*args)
@@ -51,13 +52,19 @@ module Acapi
       ch = conn.create_channel
       queue = ch.queue(QUEUE_NAME, {:persistent => true})
       @@instance = self.new(conn, ch, queue, app_id)
+    #  exchange = ch.topic(TOPIC_NAME, :persistent => true)
+    #  @@instance = self.new(conn, ch, queue, exchange)
+    #end
     end
 
+
+    #def initialize(conn, ch, queue, exchange)
     def initialize(conn, ch, queue, app_id)
       @app_id = app_id
       @connection = conn
       @channel = ch
       @queue = queue
+      #@exchange = exchange
     end
 
     def log(name, started, finished, unique_id, data = {})

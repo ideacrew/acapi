@@ -1,6 +1,6 @@
 module Acapi
   class ConfigurationSettings
-    attr_accessor :publish_amqp_events, :app_id
+    attr_accessor :publish_amqp_events, :app_id, :subscribe_amqp_events
   end
   
 end
@@ -10,7 +10,7 @@ module Acapi
     class LocalAmqpPublisher < Rails::Railtie
 
       initializer "local_amqp_publisher_railtie.configure_rails_initialization" do |app|
-        publish_enabled = app.config.acapi.publish_amqp_events
+        publish_enabled = true
         if publish_enabled.blank?
           warn_settings_not_specified
         end
