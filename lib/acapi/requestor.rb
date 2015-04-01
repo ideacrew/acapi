@@ -33,7 +33,10 @@ module Acapi
       end
 
       def reconnect!
-        disconnect!
+        begin
+          disconnect!
+        rescue Timeout::Error
+        end
         @connection = Bunny.new(@uri)
         @connection.start
         @channel = @connection.create_channel
