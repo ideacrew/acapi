@@ -12,7 +12,7 @@ module Acapi
         channel = @connection.create_channel
         temp_queue = channel.queue("", :exclusive => true)
         channel.prefetch(1)
-        request_exchange = channel.direct(Rails.config.application.acapi.remote_request_exchange, :durable => true)
+        request_exchange = channel.direct(Rails.application.config.acapi.remote_request_exchange, :durable => true)
         raise [payload, properties.dup.merge({ :reply_to => temp_queue.name, :persistent => true })].inspect
         request_exchange.publish(payload, properties.dup.merge({ :reply_to => temp_queue.name, :persistent => true }))
         delivery_info, r_props, r_payload = [nil, nil, nil]
