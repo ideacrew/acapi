@@ -16,17 +16,14 @@ module Acapi
     end
 
     class AmqpRequestor
-      def initialize(app_id, uri, conn, exchange_name)
+      def initialize(app_id, uri)
         @app_id = app_id
         @uri = uri
-        @connection = conn
-        @channel = @connection.create_channel
-        @exchange_name = exchange_name
-        @exchange = @channel.direct(@exchange_name, :durable => true)
       end
 
       def request(req_name, payload,timeout=1)
-        requestor = ::Acapi::Amqp::Requestor.new(@channel.connection)
+        open_connection_for_request
+        requestor = ::Acapi::Amqp::Requestor.new(@connection)
         req_time = Time.now
         msg = ::Acapi::Amqp::OutMessage.new(@app_id, req_name, req_time, req_time, nil, payload)
         response = requestor.request(*msg.to_request_properties(timeout))
@@ -34,19 +31,26 @@ module Acapi
         in_msg.to_response
       end
 
-      def reconnect!
-        begin
-          disconnect!
-        rescue Timeout::Error
+      def open_connection_for_request
+        if !@connection
+          @connection = Bunny.new(@uri)
+          @connection.start
         end
+      end
+
+      def reconnect!
+        disconnect!
         @connection = Bunny.new(@uri)
         @connection.start
-        @channel = @connection.create_channel
-        @exchange = @channel.direct(@exchange_name, :durable => true)
       end
 
       def disconnect!
-        @connection.close
+        if @connection
+          begin
+            @connection.close
+          rescue Timeout::Error
+          end
+        end
       end
     end
 
@@ -67,13 +71,11 @@ module Acapi
     end
 
     def self.boot!(app_id, uri, ex_name)
-      conn = Bunny.new(uri)
-      conn.start
-      @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn, ex_name)
+      @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri)
     end
 
     def self.request(req_name, payload, timeout=1)
-      @@instance.request(req_name, payload,timeout)
+      instance.request(req_name, payload,timeout)
     end
   end
 end
