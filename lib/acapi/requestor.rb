@@ -1,8 +1,18 @@
 require 'bunny'
 
 module Acapi
+  class DoNothingRequestor
+    def request
+      ["", "",{}] 
+    end
+  end
+
+  class AmqpRequestor
+    def request
+      requestor = ::Acapi::Amqp::Requestor.new(@connection)
+    end
+  end
   class LocalAmqpPublisher
-    QUEUE_NAME = "acapi.events.local"
 
     class DoNothingPublisher
       def log(*args)
@@ -64,8 +74,17 @@ module Acapi
       if data.has_key?(:app_id) || data.has_key?("app_id")
         return
       end
-      msg = Acapi::Amqp::OutMessage.new(@app_id, name, finished, finished, unique_id, data)
-      @queue.publish(*msg.to_message_properties)
+      message_data = data.dup
+      body_data = message_data.delete(:body)
+      body_data = body_data.nil? ? "" : body_data.to_s
+      message_props = {
+        :routing_key => name.sub(/\Aacapi\./, ""),
+        :app_id => @app_id,
+        :headers => {
+          :submitted_timestamp => finished
+        }.merge(data)
+      }
+      @queue.publish(body_data, message_props)
     end
 
     def reconnect!
