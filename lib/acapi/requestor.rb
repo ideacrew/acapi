@@ -16,10 +16,11 @@ module Acapi
     end
 
     class AmqpRequestor
-      def initialize(app_id, uri, conn)
+      def initialize(app_id, uri, conn, chan)
         @app_id = app_id
         @uri = uri
         @connection = conn
+        @channel = chan
       end
 
       def request(req_name, payload,timeout=1)
@@ -59,7 +60,8 @@ module Acapi
       end
       conn = Bunny.new(uri)
       conn.start
-      @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn)
+      slug_channel = conn.create_channel # We need a slug default channel
+      @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn, slug_channel)
     end
 
     def self.request(req_name, payload, timeout=1)

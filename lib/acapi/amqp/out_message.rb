@@ -17,6 +17,7 @@ module Acapi
         message_data = @payload.dup
         body_data = message_data.delete(:body)
         body_data = body_data.nil? ? "" : body_data.to_s
+        @end_time ||= Time.now
         message_props = {
           :routing_key => @event_name.sub(/\Aacapi\./, ""),
           :app_id => @app_id,
