@@ -42,6 +42,10 @@ module Acapi
       end
     end
 
+    def self.reconnect!
+      @@instance.reconnect!
+    end
+
     def self.disable!
       if defined?(@@instance) && !@instance.nil?
         @@instance.disconnect!
