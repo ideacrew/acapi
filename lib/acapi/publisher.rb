@@ -1,5 +1,6 @@
 require "acapi/publishers/notifications_queue"
 require "acapi/publishers/pub_sub_notifications"
+require "acapi/publishers/upstream_event_publisher"
 
 module Acapi
   module Publishers

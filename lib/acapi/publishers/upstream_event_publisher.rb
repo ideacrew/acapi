@@ -30,32 +30,12 @@ module Acapi
         end
       end
 
-      def extract_start_time(props)
-        headers = props[:headers] || {}
-        ts_val = headers["submitted_timestamp"]
-        ts_val.blank? : Time.now : ts_val
-      end
-
-      def extract_event_name(di)
-        "acapi." + di.routing_key
-      end
-
-      def extract_payload(props, body)
-        properties = props.dup
-        headers = properties.delete(:headers) || {}
-        properties.merge(headers).merge({:body => payload})
-      end
-
       def handle_message(app_id, di, props, body)
         if app_id == props.app_id
           return
         end
-        properties = props.to_hash.dup
-        rk_name = extract_event_name(di)
-        msg_id = properties.message_id # Also provide GUID if not provided
-        stime = extract_start_time(properties)
-        payload = extract_payload(properties, body)
-        ActiveSuppport::Notifications.publish(rk_name, stime, stime, msg_id, payload)
+        msg = ::Acapi::Amqp::InMessage.new(di, props, body)
+        ActiveSuppport::Notifications.publish(*msg.to_instrumented_event)
       end
     end
   end
