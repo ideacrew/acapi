@@ -15,7 +15,7 @@ end
 module Acapi
   module Railties
     class AmqpConfigurationSettings < Rails::Railtie
-      initializer "acapi_amqp_configuration_settings.configure_rails_initialization" do |app|
+      config.after_initialize do |app|
         app_id = Rails.application.config.acapi.app_id
         setting = Rails.application.config.acapi.remote_broker_uri
         r_exchange = Rails.application.config.acapi.remote_request_exchange
