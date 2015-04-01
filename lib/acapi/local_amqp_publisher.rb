@@ -69,18 +69,18 @@ module Acapi
 
     def log(name, started, finished, unique_id, data = {})
       message_data = data.dup
-      byebug
-      puts data
       body_data = message_data.delete(:body)
       body_data = body_data.nil? ? "" : body_data.to_s
       message_props = {
         :routing_key => name.sub(/\Aacapi\./, ""),
         :app_id => @app_id,
+        :message_id => unique_id,
         :headers => {
           :submitted_timestamp => finished
         }.merge(data)
       }
-      @queue.publish(body_data, message_props)
+      byebug
+      @queue.publish(body_data, message_props)#, routing_key: "abc123")
     end
 
     def reconnect!
