@@ -12,7 +12,7 @@ describe Acapi::LocalAmqpPublisher do
       allow(Bunny).to receive(:new).and_return(session)
       allow(session).to receive(:start)
       allow(session).to receive(:create_channel).and_return(channel)
-      allow(channel).to receive(:queue).with(forwarding_queue_name, {:persistent => true}).and_return(queue)
+      allow(channel).to receive(:queue).with(forwarding_queue_name, {:durable => true}).and_return(queue)
     end
 
     it "should establish a connection to the local broker" do
@@ -23,7 +23,7 @@ describe Acapi::LocalAmqpPublisher do
     end
 
     it "should establish a persistent queue on the local broker" do
-      expect(channel).to receive(:queue).with(forwarding_queue_name, {:persistent => true}).and_return(queue)
+      expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable => true}).and_return(queue)
       ::Acapi::LocalAmqpPublisher.boot!("")
     end
   end
@@ -109,7 +109,7 @@ describe Acapi::LocalAmqpPublisher do
       expect(Bunny).to receive(:new).and_return(session)
       expect(session).to receive(:start)
       expect(session).to receive(:create_channel).and_return(channel)
-      expect(channel).to receive(:queue).with(forwarding_queue_name, {:persistent => true}).and_return(queue)
+      expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable=> true}).and_return(queue)
       subject.reconnect!
     end
 

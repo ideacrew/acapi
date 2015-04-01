@@ -49,7 +49,7 @@ module Acapi
       conn = Bunny.new
       conn.start
       ch = conn.create_channel
-      queue = ch.queue(QUEUE_NAME, {:persistent => true})
+      queue = ch.queue(QUEUE_NAME, {:durable => true})
       @@instance = self.new(conn, ch, queue, app_id)
     end
 
@@ -73,7 +73,7 @@ module Acapi
       @connection = Bunny.new
       @connection.start
       @channel = @connection.create_channel
-      @queue = @channel.queue(QUEUE_NAME, {:persistent => true})
+      @queue = @channel.queue(QUEUE_NAME, {:durable => true})
     end
 
     def disconnect!
