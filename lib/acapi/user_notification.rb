@@ -9,7 +9,7 @@ module Acapi
 
     def publish!
       ActiveSupport::Notifications.instrument(
-        "acapi.info.user_notification.#{@kind.downcase}.published",
+        "acapi.info.user_notifications.#{@kind.downcase}.published",
         { :subject => @subject, :body => @body, :recipient => @recipient }
       )
     end
