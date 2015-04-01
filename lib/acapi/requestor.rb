@@ -26,9 +26,9 @@ module Acapi
         requestor = ::Acapi::Amqp::Requestor.new(@connection)
         req_time = Time.now
         msg = ::Acapi::Amqp::OutMessage.new(@app_id, req_name, req_time, req_time, nil, payload)
-        requestor.request(*msg.to_request_properties(timeout))
-#        in_msg = ::Acapi::Amqp::InMessage.new(*requestor.request(*msg.to_request_properties))
-#        in_msg.to_response
+        response = requestor.request(*msg.to_request_properties(timeout))
+        in_msg = ::Acapi::Amqp::InMessage.new(*response)
+        in_msg.to_response
       end
 
       def reconnect!

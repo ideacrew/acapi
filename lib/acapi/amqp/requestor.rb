@@ -9,7 +9,6 @@ module Acapi
       end
 
       def request(properties, payload, timeout = 15)
-        raise [properties, payload, timeout].inspect
         channel = @connection.create_channel
         temp_queue = channel.queue("", :exclusive => true)
         channel.prefetch(1)
@@ -31,11 +30,6 @@ module Acapi
         [delivery_info, r_props, r_payload]
       end
 
-      def self.default
-        conn = Bunny.new(ExchangeInformation.amqp_uri)
-        conn.start
-        self.new(conn)
-      end
     end
   end
 end

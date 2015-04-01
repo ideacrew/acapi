@@ -38,7 +38,7 @@ module Acapi
             :submitted_timestamp => @end_time
           }).merge(message_data)
         }
-        [body_data, message_props, timeout]
+        [message_props, body_data, timeout]
       end
     end
   end
