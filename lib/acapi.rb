@@ -5,6 +5,8 @@ require "acapi/config"
 require "acapi/publisher"
 require "acapi/subscriber"
 
+require "acapi/subscribers/acapi_events"
+
 require "acapi/amqp/in_message"
 require "acapi/amqp/out_message"
 require "acapi/local_amqp_publisher"

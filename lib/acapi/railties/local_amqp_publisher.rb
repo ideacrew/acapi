@@ -20,6 +20,7 @@ module Acapi
         else
           boot_local_publisher
         end
+        ::Acapi::Subscribers::AcapiEvents.register
       end
 
       def disable_publishing

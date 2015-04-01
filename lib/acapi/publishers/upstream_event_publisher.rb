@@ -35,7 +35,6 @@ module Acapi
           return
         end
         msg = ::Acapi::Amqp::InMessage.new(di, props, body)
-        Rails.log.info msg.to_instrumented_event.inspect
         ActiveSupport::Notifications.publish(*msg.to_instrumented_event)
       end
     end
