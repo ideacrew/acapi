@@ -16,11 +16,11 @@ module Acapi
     end
 
     class AmqpRequestor
-      def initialize(app_id, uri, conn, chan, exchange_name)
+      def initialize(app_id, uri, conn, exchange_name)
         @app_id = app_id
         @uri = uri
         @connection = conn
-        @channel = chan
+        @channel = @connection.create_channel
         @exchange_name = exchange_name
         @exchange = @channel.direct(@exchange_name, :durable => true)
       end
@@ -69,8 +69,7 @@ module Acapi
     def self.boot!(app_id, uri, ex_name)
       conn = Bunny.new(uri)
       conn.start
-      channel = conn.create_channel(77) # We need a slug default channel
-      @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn, channel, ex_name)
+      @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn, ex_name)
     end
 
     def self.request(req_name, payload, timeout=1)
