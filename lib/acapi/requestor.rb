@@ -59,6 +59,7 @@ module Acapi
       end
       conn = Bunny.new(uri)
       conn.start
+      conn.create_channel # Create a default channel, otherwise things won't start correctly
       @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn)
     end
 
