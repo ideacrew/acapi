@@ -16,11 +16,12 @@ module Acapi
   module Railties
     class AmqpConfigurationSettings < Rails::Railtie
       initializer "acapi_amqp_configuration_settings.configure_rails_initialization" do |app|
+        app_id = Rails.application.config.acapi.app_id
         setting = Rails.application.config.acapi.remote_broker_uri
         if !setting
           disable_requestor
         else
-          boot_requestor(setting)
+          boot_requestor(app_id, setting)
         end
       end
 
@@ -29,8 +30,8 @@ module Acapi
         ::Acapi::Requestor.disable!
       end
 
-      def boot_requestor(uri)
-        ::Acapi::Requestor.boot!(uri)
+      def boot_requestor(app_id, uri)
+        ::Acapi::Requestor.boot!(app_id, uri)
       end
     end
   end

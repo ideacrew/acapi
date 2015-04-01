@@ -4,7 +4,7 @@ module Acapi
   class Requestor
     class DoNothingRequestor
       def request(*args)
-        ["", "", {}] 
+        nil
       end
 
       def reconnect!
@@ -16,7 +16,8 @@ module Acapi
     end
 
     class AmqpRequestor
-      def initialize(uri, conn)
+      def initialize(app_id, uri, conn)
+        @app_id = app_id
         @uri = uri
         @connection = conn
       end
@@ -24,7 +25,7 @@ module Acapi
       def request(req_name, payload)
         requestor = ::Acapi::Amqp::Requestor.new(@connection)
         req_time = Time.now
-        msg = ::Acapi::Amqp::OutMessage.new(req_name, req_time, req_time, nil, payload)
+        msg = ::Acapi::Amqp::OutMessage.new(@app_id, req_name, req_time, req_time, nil, payload)
         in_msg = ::Acapi::Amqp::InMessage.new(*requestor.request(*msg.to_request_properties))
         in_msg.to_response
       end
@@ -47,13 +48,13 @@ module Acapi
       @@instance = DoNothingRequestor.new
     end
 
-    def self.boot!(uri)
+    def self.boot!(app_id, uri)
       if defined?(@@instance) && !@instance.nil?
         @@instance.disconnect!
       end
       conn = Bunny.new(uri)
       conn.start
-      @@instance = AmqpRequestor.new(uri, conn)
+      @@instance = AmqpRequestor.new(app_id, uri, conn)
     end
 
     def self.request(req_name, payload)
