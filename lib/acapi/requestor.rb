@@ -24,7 +24,7 @@ module Acapi
       end
 
       def request(req_name, payload,timeout=1)
-        requestor = ::Acapi::Amqp::Requestor.new(@connection)
+        requestor = ::Acapi::Amqp::Requestor.new(@channel.connection)
         req_time = Time.now
         msg = ::Acapi::Amqp::OutMessage.new(@app_id, req_name, req_time, req_time, nil, payload)
         response = requestor.request(*msg.to_request_properties(timeout))
@@ -36,6 +36,7 @@ module Acapi
         disconnect!
         @connection = Bunny.new(@uri)
         @connection.start
+        @channel = @connection.create_channel
       end
 
       def disconnect!
@@ -58,7 +59,7 @@ module Acapi
       if defined?(@@instance) && !@instance.nil?
         @@instance.disconnect!
       end
-      conn = Bunny.new(uri)
+      conn = Bunny.new(uri, :heartbeat => 1)
       conn.start
       slug_channel = conn.create_channel # We need a slug default channel
       @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn, slug_channel)
