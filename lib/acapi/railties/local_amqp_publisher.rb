@@ -11,6 +11,7 @@ module Acapi
 
       initializer "local_amqp_publisher_railtie.configure_rails_initialization" do |app|
         publish_setting = app.config.acapi.publish_amqp_events
+        app_id = app.config.acapi.app_id
         disable_publish = ->(p_setting) { p_setting.blank? || !p_setting }
         case publish_setting
         when disable_publish
@@ -18,7 +19,7 @@ module Acapi
         when :log, :logging, :logger
           log_local_publisher
         else
-          boot_local_publisher
+          boot_local_publisher(app_id)
         end
         ::Acapi::Subscribers::AcapiEvents.register
       end
@@ -28,8 +29,8 @@ module Acapi
         disable_local_publisher
       end
 
-      def boot_local_publisher
-        ::Acapi::LocalAmqpPublisher.boot!
+      def boot_local_publisher(app_id)
+        ::Acapi::LocalAmqpPublisher.boot!(app_id)
       end
 
       def log_local_publisher
