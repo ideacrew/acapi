@@ -18,8 +18,13 @@ module Acapi
 
       def extract_start_time(props)
         headers = props[:headers] || {}
-        ts_val = headers["submitted_timestamp"]
-        ts_val.blank? ? Time.now : ts_val
+        ts_val = Time.now
+        if headers.has_key?("submitted_timestamp")
+          ts_val = headers["submitted_timestamp"]
+        elsif headers.has_key?(:submitted_timestamp)
+          ts_val = headers[:submitted_timestamp]
+        end
+        ts_val
       end
 
       def extract_event_name(di)

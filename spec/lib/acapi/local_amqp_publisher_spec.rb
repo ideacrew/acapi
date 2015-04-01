@@ -87,6 +87,15 @@ describe Acapi::LocalAmqpPublisher do
       end
       subject.log(event_name, started_at, finished_at, message_id, payload)
     end
+
+    it "should use the submitted_timestamp property for the start/end times if it exists" do
+      given_timestamp = "frank"
+      expect(queue).to receive(:publish) do |body, opts|
+        expect(body).to eql ""
+        expect(opts[:headers][:submitted_timestamp]).to eq given_timestamp 
+      end
+      subject.log(event_name, started_at, finished_at, message_id, payload.merge({:submitted_timestamp => given_timestamp}))
+    end
   end
 
   describe "that can support unicorn" do

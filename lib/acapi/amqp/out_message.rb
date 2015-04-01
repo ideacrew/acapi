@@ -17,9 +17,9 @@ module Acapi
         message_props = {
           :routing_key => @event_name.sub(/\Aacapi\./, ""),
           :app_id => @app_id,
-          :headers => {
+          :headers => ({
             :submitted_timestamp => @end_time
-          }.merge(@payload)
+          }).merge(message_data)
         }
         [body_data, message_props]
       end
