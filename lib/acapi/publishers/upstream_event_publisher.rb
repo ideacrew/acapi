@@ -35,7 +35,7 @@ module Acapi
           return
         end
         msg = ::Acapi::Amqp::InMessage.new(di, props, body)
-        ActiveSuppport::Notifications.publish(*msg.to_instrumented_event)
+        ActiveSupport::Notifications.publish(*msg.to_instrumented_event)
       end
     end
   end
