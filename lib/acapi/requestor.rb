@@ -64,7 +64,7 @@ module Acapi
       end
       conn = Bunny.new(uri, :heartbeat => 1)
       conn.start
-      slug_channel = conn.create_channel # We need a slug default channel
+      slug_channel = conn.create_channel(77) # We need a slug default channel
       @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn, slug_channel)
     end
 
