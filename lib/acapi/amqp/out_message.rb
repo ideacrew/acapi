@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Acapi
   module Amqp
     class OutMessage 
@@ -7,6 +9,7 @@ module Acapi
         @start_time = s_time
         @end_time = e_time
         @message_id = m_id
+        @message_id ||= SecureRandom.uuid.gsub("-","")
         @payload = p
       end
 
