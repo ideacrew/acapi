@@ -22,12 +22,13 @@ module Acapi
         @connection = conn
       end
 
-      def request(req_name, payload)
+      def request(req_name, payload,timeout=1)
         requestor = ::Acapi::Amqp::Requestor.new(@connection)
         req_time = Time.now
         msg = ::Acapi::Amqp::OutMessage.new(@app_id, req_name, req_time, req_time, nil, payload)
-        in_msg = ::Acapi::Amqp::InMessage.new(*requestor.request(*msg.to_request_properties))
-        in_msg.to_response
+        requestor.request(*msg.to_request_properties(timeout))
+#        in_msg = ::Acapi::Amqp::InMessage.new(*requestor.request(*msg.to_request_properties))
+#        in_msg.to_response
       end
 
       def reconnect!
@@ -57,8 +58,8 @@ module Acapi
       @@instance = AmqpRequestor.new(app_id, uri, conn)
     end
 
-    def self.request(req_name, payload)
-      @@instance.request(req_name, payload)
+    def self.request(req_name, payload, timeout=1)
+      @@instance.request(req_name, payload,timeout)
     end
   end
 end

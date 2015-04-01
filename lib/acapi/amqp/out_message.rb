@@ -15,7 +15,7 @@ module Acapi
 
       def to_message_properties
         message_data = @payload.dup
-        body_data = @payload.delete(:body)
+        body_data = message_data.delete(:body)
         body_data = body_data.nil? ? "" : body_data.to_s
         message_props = {
           :routing_key => @event_name.sub(/\Aacapi\./, ""),
@@ -29,7 +29,7 @@ module Acapi
 
       def to_request_properties(timeout = 1)
         message_data = @payload.dup
-        body_data = @payload.delete(:body)
+        body_data = message_data.delete(:body)
         body_data = body_data.nil? ? "" : body_data.to_s
         message_props = {
           :routing_key => @event_name,
