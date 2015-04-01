@@ -1,18 +1,22 @@
 require 'spec_helper'
 
 describe Acapi::LocalAmqpPublisher do
-  let(:forwarding_queue_name) { "acapi.events.local" }
+  let(:forwarding_queue_name) { "acapi.queue.events.local" }
+  let(:forwarding_exchange_name ) { "acapi.exchange.events.local" }
 
   describe "on initialization" do
     let(:session) { instance_double("Bunny::Session") }
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
+    let(:exchange) { instance_double("Bunny::Exchange") }
 
     before :each do
       allow(Bunny).to receive(:new).and_return(session)
       allow(session).to receive(:start)
       allow(session).to receive(:create_channel).and_return(channel)
       allow(channel).to receive(:queue).with(forwarding_queue_name, {:durable => true}).and_return(queue)
+      allow(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
+      allow(queue).to receive(:bind).with(exchange, {})
     end
 
     it "should establish a connection to the local broker" do
@@ -32,8 +36,9 @@ describe Acapi::LocalAmqpPublisher do
     let(:session) { instance_double("Bunny::Session") }
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
+    let(:exchange) { instance_double("Bunny::Exchange") }
     let(:app_id) { "my app" }
-    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, app_id) }
+    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, app_id, exchange) }
 
     let(:event_name) { "acapi.individual.created" }
     let(:started_at) { double }
@@ -54,7 +59,7 @@ describe Acapi::LocalAmqpPublisher do
     end
 
     it "publishes with a routing key the same as the event name, just stripped of 'acapi.'" do
-      expect(queue).to receive(:publish) do |body, opts|
+      expect(exchange).to receive(:publish) do |body, opts|
         expect(body).to eql ""
         expect(opts[:routing_key]).to eq "individual.created"
       end
@@ -62,7 +67,7 @@ describe Acapi::LocalAmqpPublisher do
     end
 
     it "creates the submitted_timestamp key from the finished_at property of the event" do
-      expect(queue).to receive(:publish) do |body, opts|
+      expect(exchange).to receive(:publish) do |body, opts|
         expect(body).to eql ""
         expect(opts[:headers][:submitted_timestamp]).to eq finished_at
       end
@@ -73,14 +78,14 @@ describe Acapi::LocalAmqpPublisher do
       message_body_content = "a message body"
       message_body = double(:to_s => message_body_content)
       message_with_body = payload.merge(:body => message_body)
-      expect(queue).to receive(:publish) do |body, opts|
+      expect(exchange).to receive(:publish) do |body, opts|
         expect(body).to eql message_body_content
       end
       subject.log(event_name, started_at, finished_at, message_id, message_with_body)
     end
 
     it "uses all other event properties as headers" do
-      expect(queue).to receive(:publish) do |body, opts|
+      expect(exchange).to receive(:publish) do |body, opts|
         expect(body).to eql ""
         expect(opts[:headers][:other_property_1]).to eq other_property_1
         expect(opts[:headers][:other_property_2]).to eq other_property_2
@@ -90,7 +95,7 @@ describe Acapi::LocalAmqpPublisher do
 
     it "should use the submitted_timestamp property for the start/end times if it exists" do
       given_timestamp = "frank"
-      expect(queue).to receive(:publish) do |body, opts|
+      expect(exchange).to receive(:publish) do |body, opts|
         expect(body).to eql ""
         expect(opts[:headers][:submitted_timestamp]).to eq given_timestamp 
       end
@@ -102,7 +107,8 @@ describe Acapi::LocalAmqpPublisher do
     let(:session) { instance_double("Bunny::Session") }
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
-    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, "") }
+    let(:exchange) { instance_double("Bunny::Exchange") }
+    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, "", exchange) }
 
     it "supports reconnection for after_fork" do
       expect(session).to receive(:close)
@@ -110,6 +116,8 @@ describe Acapi::LocalAmqpPublisher do
       expect(session).to receive(:start)
       expect(session).to receive(:create_channel).and_return(channel)
       expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable=> true}).and_return(queue)
+      expect(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
+      expect(queue).to receive(:bind).with(exchange, {})
       subject.reconnect!
     end
 

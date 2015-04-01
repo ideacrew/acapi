@@ -2,7 +2,8 @@ require 'bunny'
 
 module Acapi
   class LocalAmqpPublisher
-    QUEUE_NAME = "acapi.events.local"
+    EXCHANGE_NAME = "acapi.exchange.events.local"
+    QUEUE_NAME = "acapi.queue.events.local"
 
     class DoNothingPublisher
       def log(*args)
@@ -50,14 +51,17 @@ module Acapi
       conn.start
       ch = conn.create_channel
       queue = ch.queue(QUEUE_NAME, {:durable => true})
-      @@instance = self.new(conn, ch, queue, app_id)
+      exchange = ch.fanout(EXCHANGE_NAME, {:durable => true})
+      queue.bind(exchange, {})
+      @@instance = self.new(conn, ch, queue, app_id, exchange)
     end
 
-    def initialize(conn, ch, queue, app_id)
+    def initialize(conn, ch, queue, app_id, ex)
       @app_id = app_id
       @connection = conn
       @channel = ch
       @queue = queue
+      @exchange = ex
     end
 
     def log(name, started, finished, unique_id, data = {})
@@ -65,7 +69,7 @@ module Acapi
         return
       end
       msg = Acapi::Amqp::OutMessage.new(@app_id, name, finished, finished, unique_id, data)
-      @queue.publish(*msg.to_message_properties)
+      @exchange.publish(*msg.to_message_properties)
     end
 
     def reconnect!
@@ -74,6 +78,8 @@ module Acapi
       @connection.start
       @channel = @connection.create_channel
       @queue = @channel.queue(QUEUE_NAME, {:durable => true})
+      @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
+      @queue.bind(@exchange, {})
     end
 
     def disconnect!
