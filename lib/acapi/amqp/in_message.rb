@@ -10,7 +10,7 @@ module Acapi
       def to_instrumented_event
         properties = @props.to_hash.dup
         rk_name = extract_event_name(@delivery_info)
-        msg_id = properties.message_id # Generate guid if not provided
+        msg_id = @props.message_id # Generate guid if not provided
         stime = extract_start_time(properties)
         payload = extract_payload(properties, @body)
         [rk_name, stime, stime, msg_id, payload]
