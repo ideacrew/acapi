@@ -55,7 +55,7 @@ module Acapi
       end
       conn = Bunny.new(uri)
       conn.start
-      @@instance = AmqpRequestor.new(app_id, uri, conn)
+      @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri, conn)
     end
 
     def self.request(req_name, payload, timeout=1)
