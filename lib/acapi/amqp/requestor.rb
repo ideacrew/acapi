@@ -9,6 +9,7 @@ module Acapi
       end
 
       def request(properties, payload, timeout = 15)
+        raise [properties, payload, timeout].inspect
         channel = @connection.create_channel
         temp_queue = channel.queue("", :exclusive => true)
         channel.prefetch(1)
