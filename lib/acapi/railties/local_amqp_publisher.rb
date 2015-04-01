@@ -9,7 +9,7 @@ module Acapi
   module Railties
     class LocalAmqpPublisher < Rails::Railtie
 
-      config.after_initialize do |app|
+      initializer "local_amqp_publisher.initialize_local_events" do |app|
         publish_setting = app.config.acapi.publish_amqp_events
         app_id = app.config.acapi.app_id
         disable_publish = ->(p_setting) { p_setting.blank? || !p_setting }
