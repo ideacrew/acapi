@@ -32,14 +32,14 @@ module Acapi
     end
 
     def self.logging!
-      if @@instance
+      if defined?(@@instance) && !@instance.nil?
         @@instance.disconnect!
       end
       @@instance = LoggingPublisher.new
     end
 
     def self.disable!
-      if @@instance
+      if defined?(@@instance) && !@instance.nil?
         @@instance.disconnect!
       end
       @@instance = DoNothingPublisher.new
