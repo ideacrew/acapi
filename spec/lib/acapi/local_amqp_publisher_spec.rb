@@ -47,6 +47,12 @@ describe Acapi::LocalAmqpPublisher do
       :other_property_2 => other_property_2,
     } }
 
+    it "should filter out all messages which already have an :app_id" do
+      expect(queue).not_to receive(:publish)
+      subject.log(event_name, started_at, finished_at, message_id, {:app_id => "whatever"})
+      subject.log(event_name, started_at, finished_at, message_id, {"app_id" => "whatever"})
+    end
+
     it "publishes with a routing key the same as the event name, just stripped of 'acapi.'" do
       expect(queue).to receive(:publish) do |body, opts|
         expect(body).to eql ""

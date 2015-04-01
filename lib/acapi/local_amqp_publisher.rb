@@ -61,6 +61,9 @@ module Acapi
     end
 
     def log(name, started, finished, unique_id, data = {})
+      if data.has_key?(:app_id) || data.has_key?("app_id")
+        return
+      end
       message_data = data.dup
       body_data = message_data.delete(:body)
       body_data = body_data.nil? ? "" : body_data.to_s
