@@ -55,5 +55,9 @@ module Acapi
       conn.start
       @@instance = AmqpRequestor.new(uri, conn)
     end
+
+    def self.request(req_name, payload)
+      @@instance.request(req_name, payload)
+    end
   end
 end
