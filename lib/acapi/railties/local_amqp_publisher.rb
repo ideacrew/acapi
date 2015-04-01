@@ -10,23 +10,30 @@ module Acapi
     class LocalAmqpPublisher < Rails::Railtie
 
       initializer "local_amqp_publisher_railtie.configure_rails_initialization" do |app|
-        publish_enabled = app.config.acapi.publish_amqp_events
-        if publish_enabled.blank?
-          warn_settings_not_specified
-        end
-        if publish_enabled
-          boot_local_publisher
-        else
+        publish_setting = app.config.acapi.publish_amqp_events
+        disable_publish = ->(p_setting) { p_setting.blank? || !p_setting }
+        case publish_setting
+        when disable_publish
           disable_local_publisher
+        when :log, :logging, :logger
+          log_local_publisher
+        else
+          boot_local_publisher
         end
       end
 
-      def warn_settings_not_specified
-        Rails.logger.info "No setting specified for 'acapi.publish_amqp_events' - disabling publishing of events to local AMQP instance'"
+      def disable_publishing
+        Rails.logger.info "Setting 'acapi.publish_amqp_events' set to disabled - disabling publishing of events to local AMQP instance'"
+        disable_local_publisher
       end
 
       def boot_local_publisher
         ::Acapi::LocalAmqpPublisher.boot!
+      end
+
+      def log_local_publisher
+        Rails.logger.info "Setting 'acapi.publish_amqp_events' set to log - events will be reflected in the log"
+        ::Acapi::LocalAmqpPublisher.logging!
       end
 
       def disable_local_publisher
