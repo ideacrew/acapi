@@ -41,6 +41,7 @@ module Acapi
       end
 
       def to_response
+        to_instrumented_event.last
       end
     end
   end

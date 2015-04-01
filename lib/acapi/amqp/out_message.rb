@@ -26,6 +26,20 @@ module Acapi
         }
         [body_data, message_props]
       end
+
+      def to_request_properties(timeout = 1)
+        message_data = @payload.dup
+        body_data = @payload.delete(:body)
+        body_data = body_data.nil? ? "" : body_data.to_s
+        message_props = {
+          :routing_key => @event_name,
+          :app_id => @app_id,
+          :headers => ({
+            :submitted_timestamp => @end_time
+          }).merge(message_data)
+        }
+        [body_data, message_props, timeout]
+      end
     end
   end
 end
