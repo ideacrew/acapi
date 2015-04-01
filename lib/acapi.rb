@@ -9,6 +9,8 @@ require "acapi/subscribers/acapi_events"
 
 require "acapi/amqp/in_message"
 require "acapi/amqp/out_message"
+require "acapi/amqp/requestor"
+require "acapi/requestor"
 require "acapi/local_amqp_publisher"
 
 require "acapi/user_notification"
