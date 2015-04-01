@@ -25,7 +25,7 @@ module Acapi
       end
 
       def disable_requestor
-        Rails.logger.info "Setting 'acapi.remote_request_exchange' not provided - disabling requestor."
+        Rails.logger.info "Setting 'acapi.remote_broker_uri' not provided - disabling requestor."
         ::Acapi::Requestor.disable!
       end
 
