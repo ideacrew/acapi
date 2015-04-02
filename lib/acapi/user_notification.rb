@@ -8,10 +8,25 @@ module Acapi
     end
 
     def publish!
+      message_kind, payload = construct_arguments
       ActiveSupport::Notifications.instrument(
-        "acapi.info.user_notifications.#{@kind.downcase}.published",
-        { :subject => @subject, :body => @body, :recipient => @recipient }
+        "acapi.info.user_notifications.#{message_kind.downcase}.published",
+        payload
       )
+    end
+
+    def construct_arguments
+      args = { 
+        :subject => @subject,
+        :body => @body,
+        :recipient => @recipient
+      }
+      case @kind
+      when :email_html
+        [:email, args.merge({:format => "html"})]
+      else
+        [:email, args]
+      end
     end
   end
 end
