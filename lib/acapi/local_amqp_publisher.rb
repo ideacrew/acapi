@@ -68,19 +68,12 @@ module Acapi
     end
 
     def log(name, started, finished, unique_id, data = {})
-      message_data = data.dup
-      body_data = message_data.delete(:body)
-      body_data = body_data.nil? ? "" : body_data.to_s
-      message_props = {
-        :routing_key => name.sub(/\Aacapi\./, ""),
-        :app_id => @app_id,
-        :message_id => unique_id,
-        :headers => {
-          :submitted_timestamp => finished
-        }.merge(data)
-      }
       byebug
-      @queue.publish(body_data, message_props)#, routing_key: "abc123")
+      if data.has_key?(:app_id) || data.has_key?("app_id")
+        return
+      end
+      msg = Acapi::Amqp::OutMessage.new(@app_id, name, finished, finished, unique_id, data)
+      @exchange.publish(*msg.to_message_properties)
     end
 
     def reconnect!
