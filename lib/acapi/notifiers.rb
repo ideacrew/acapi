@@ -13,11 +13,11 @@ module Acapi
       ActiveSupport::Notifications.instrument(event_name, payload)
     end
 
-    def email(recipient, subject, body)
+    def send_email(recipient, subject, body)
       ::Acapi::UserNotification.new(:email, recipient, subject, body).publish!
     end
 
-    def email_html(recipient, subject, body)
+    def send_email_html(recipient, subject, body)
       ::Acapi::UserNotification.new(:email_html, recipient, subject, body).publish!
     end
   end
