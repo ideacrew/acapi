@@ -4,6 +4,7 @@ require "active_support"
 require "acapi/config"
 require "acapi/publisher"
 require "acapi/subscriber"
+require "acapi/notifiers"
 
 require "acapi/subscribers/acapi_events"
 
