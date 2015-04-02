@@ -4,11 +4,26 @@ describe Acapi::LocalAmqpPublisher do
   let(:forwarding_queue_name) { "acapi.queue.events.local" }
   let(:forwarding_exchange_name ) { "acapi.exchange.events.local" }
 
-  describe "on initialization" do
+
+  describe "which publishes messages" do
     let(:session) { instance_double("Bunny::Session") }
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
     let(:exchange) { instance_double("Bunny::Exchange") }
+    let(:app_id) { "my app" }
+    subject { ::Acapi::LocalAmqpPublisher.new(app_id) }
+
+    let(:event_name) { "acapi.individual.created" }
+    let(:started_at) { double }
+    let(:finished_at) { double }
+    let(:message_id) { double }
+    let(:other_property_1) { double }
+    let(:other_property_2) { double }
+
+    let(:payload) { { 
+      :other_property_1 => other_property_1,
+      :other_property_2 => other_property_2,
+    } }
 
     before :each do
       allow(Bunny).to receive(:new).and_return(session)
@@ -23,34 +38,13 @@ describe Acapi::LocalAmqpPublisher do
       expect(Bunny).to receive(:new).and_return(session)
       expect(session).to receive(:start)
       expect(session).to receive(:create_channel).and_return(channel)
-      ::Acapi::LocalAmqpPublisher.boot!("")
+      subject.log(event_name, started_at, finished_at, message_id, {:app_id => "whatever"})
     end
 
     it "should establish a persistent queue on the local broker" do
       expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable => true}).and_return(queue)
-      ::Acapi::LocalAmqpPublisher.boot!("")
+      subject.log(event_name, started_at, finished_at, message_id, {:app_id => "whatever"})
     end
-  end
-
-  describe "which publishes messages" do
-    let(:session) { instance_double("Bunny::Session") }
-    let(:channel) { instance_double("Bunny::Channel") }
-    let(:queue) { instance_double("Bunny::Queue") }
-    let(:exchange) { instance_double("Bunny::Exchange") }
-    let(:app_id) { "my app" }
-    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, app_id, exchange) }
-
-    let(:event_name) { "acapi.individual.created" }
-    let(:started_at) { double }
-    let(:finished_at) { double }
-    let(:message_id) { double }
-    let(:other_property_1) { double }
-    let(:other_property_2) { double }
-
-    let(:payload) { { 
-      :other_property_1 => other_property_1,
-      :other_property_2 => other_property_2,
-    } }
 
     it "should filter out all messages which already have an :app_id" do
       expect(queue).not_to receive(:publish)
@@ -108,9 +102,10 @@ describe Acapi::LocalAmqpPublisher do
     let(:channel) { instance_double("Bunny::Channel") }
     let(:queue) { instance_double("Bunny::Queue") }
     let(:exchange) { instance_double("Bunny::Exchange") }
-    subject { ::Acapi::LocalAmqpPublisher.new(session, channel, queue, "", exchange) }
+    subject { ::Acapi::LocalAmqpPublisher.new("some app id") }
 
     it "supports reconnection for after_fork" do
+      #publish to force the connection
       expect(session).to receive(:close)
       expect(Bunny).to receive(:new).and_return(session)
       expect(session).to receive(:start)
@@ -118,6 +113,7 @@ describe Acapi::LocalAmqpPublisher do
       expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable=> true}).and_return(queue)
       expect(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
       expect(queue).to receive(:bind).with(exchange, {})
+      subject.log("", nil, nil, nil, {:app_id => "some app id"})
       subject.reconnect!
     end
 

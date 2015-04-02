@@ -47,24 +47,15 @@ module Acapi
     end
 
     def self.boot!(app_id)
-      conn = Bunny.new
-      conn.start
-      ch = conn.create_channel
-      queue = ch.queue(QUEUE_NAME, {:durable => true})
-      exchange = ch.fanout(EXCHANGE_NAME, {:durable => true})
-      queue.bind(exchange, {})
-      @@instance = self.new(conn, ch, queue, app_id, exchange)
+      @@instance = self.new(app_id)
     end
 
-    def initialize(conn, ch, queue, app_id, ex)
+    def initialize(app_id)
       @app_id = app_id
-      @connection = conn
-      @channel = ch
-      @queue = queue
-      @exchange = ex
     end
 
     def log(name, started, finished, unique_id, data = {})
+      open_connection_if_needed
       if data.has_key?(:app_id) || data.has_key?("app_id")
         return
       end
@@ -72,18 +63,29 @@ module Acapi
       @exchange.publish(*msg.to_message_properties)
     end
 
+    def open_connection_if_needed
+      if !@connection
+        @connection = Bunny.new
+        @connection.start
+        @channel = @connection.create_channel
+        @queue = @channel.queue(QUEUE_NAME, {:durable => true})
+        @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
+        @queue.bind(@exchange, {})
+      end
+    end
+
     def reconnect!
       disconnect!
-      @connection = Bunny.new
-      @connection.start
-      @channel = @connection.create_channel
-      @queue = @channel.queue(QUEUE_NAME, {:durable => true})
-      @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
-      @queue.bind(@exchange, {})
     end
 
     def disconnect!
-      @connection.close
+      if @connection
+        begin
+          @connection.close
+        rescue Timeout::Error
+        end
+        @connection = nil
+      end
     end
 
     def self.reconnect!
