@@ -15,6 +15,7 @@ require "acapi/requestor"
 require "acapi/local_amqp_publisher"
 
 require "acapi/user_notification"
+require "acapi/subscription"
 
 module Acapi
 
@@ -26,3 +27,4 @@ end
 
 require "acapi/railties/amqp_configuration_options" if defined?(Rails)
 require "acapi/railties/local_amqp_publisher" if defined?(Rails)
+require "acapi/railties/abstract_subscription" if defined?(Rails)
