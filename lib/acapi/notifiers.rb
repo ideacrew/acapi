@@ -6,7 +6,7 @@ module Acapi
       severity ||= "info"
       app_id = Rails.application.config.acapi.app_id
       event_key = "acapi.#{severity}.application.#{app_id}.logging"
-      ActiveSupport::Notifications.instrument(event_name, options.merge(:body => message))
+      ActiveSupport::Notifications.instrument(event_key, options.merge(:body => message))
     end
 
     def notify(event_name, payload = {})
