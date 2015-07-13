@@ -14,8 +14,8 @@ describe Acapi::LocalAmqpPublisher do
     subject { ::Acapi::LocalAmqpPublisher.new(app_id) }
 
     let(:event_name) { "acapi.individual.created" }
-    let(:started_at) { double }
-    let(:finished_at) { double }
+    let(:started_at) { double(:to_i => 12345) }
+    let(:finished_at) { double(:to_i => 12345) }
     let(:message_id) { double }
     let(:other_property_1) { double }
     let(:other_property_2) { double }
