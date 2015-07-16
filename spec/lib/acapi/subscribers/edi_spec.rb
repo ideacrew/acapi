@@ -12,11 +12,9 @@ describe Acapi::Subscribers::Edi do
     end
 
     it "should send events to the new subscription" do
-      Rails.application.instance_eval { @initialized = false }
-      Rails.application.initialize!
       Rails.application.config.acapi.register_all_additional_subscriptions
 
-      expect(slug_event_handler).to receive(:call) do |e_name, e_start, e_end, msg_id, payload|
+      expect(slug_event_handler).to receive(:call).at_least(:once) do |e_name, e_start, e_end, msg_id, payload|
         expect(e_name).to eq "acapi.info.events.enrollment.submitted"
         expect(payload).to eq({ :body => "enrollment" })
       end

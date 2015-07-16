@@ -8,7 +8,26 @@ module DontPolluteMyNamespace
       ["local.bogusevent.whatever"]
     end
 
-    def call(e_name, e_start, e_end, msg_id, payload)
+    def self.set_mock_instance(mi)
+      @@mock_instance = mi
+    end
+
+    def call(*args)
+      @@mock_instance.call(*args)
+    end
+  end
+
+  class AsyncSubscriberForExampleSake < Acapi::Subscription
+    def self.subscription_details
+      ["local.async.bogusevent.whatever"]
+    end
+
+    def self.set_mock_instance(mi)
+      @@mock_instance = mi
+    end
+
+    def call(*args)
+      @@mock_instance.call(*args)
     end
   end
 end
@@ -21,20 +40,32 @@ describe "Abstract subscription railtie" do
   end
 
   describe "provided a bogus event to experiment on" do
-    let(:slug_event_handler) { double }
-
-    before :each do
-      allow(DontPolluteMyNamespace::SubscriberForExampleSake).to receive(:new).and_return(slug_event_handler)
-      Rails.application.config.acapi.add_subscription(DontPolluteMyNamespace::SubscriberForExampleSake)
+    before :all do
+      @slug_event_handler = Object.new
+      @slug_async_event_handler = Object.new
+      DontPolluteMyNamespace::SubscriberForExampleSake.set_mock_instance(@slug_event_handler)
+      DontPolluteMyNamespace::AsyncSubscriberForExampleSake.set_mock_instance(@slug_async_event_handler)
     end
 
-    it "should send events to the new subscription" do
-      Rails.application.initialize!
-      expect(slug_event_handler).to receive(:call) do |e_name, e_start, e_end, msg_id, payload|
+    it "should send synchronous events to the new subscription" do
+      Rails.application.config.acapi.add_subscription(DontPolluteMyNamespace::SubscriberForExampleSake)
+      Rails.application.config.acapi.register_all_additional_subscriptions
+      expect(@slug_event_handler).to receive(:call).at_least(:once) do |e_name, e_start, e_end, msg_id, payload|
         expect(e_name).to eq "local.bogusevent.whatever"
         expect(payload).to eq({ :body => "boguswhatever" })
       end
       ActiveSupport::Notifications.instrument("local.bogusevent.whatever", { :body => "boguswhatever" })
     end
+
+    it "should send asynchronous events to the new subscription" do
+      Rails.application.config.acapi.add_async_subscription(DontPolluteMyNamespace::AsyncSubscriberForExampleSake)
+      Rails.application.config.acapi.register_async_subscribers!
+      expect(@slug_async_event_handler).to receive(:call).at_least(:once) do |e_name, e_start, e_end, msg_id, payload|
+        expect(e_name).to eq "local.async.bogusevent.whatever"
+        expect(payload).to eq({ :body => "boguswhatever" })
+      end
+      ActiveSupport::Notifications.instrument("local.async.bogusevent.whatever", { :body => "boguswhatever" })
+    end
   end
+
 end

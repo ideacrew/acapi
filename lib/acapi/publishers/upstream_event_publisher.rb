@@ -8,6 +8,10 @@ module Acapi
         @after_fork = after_fork
       end
 
+      def register_subscribers!
+        Rails.application.config.register_async_subscribers!
+      end
+
       def run
         if @after_fork
           @after_fork.call
