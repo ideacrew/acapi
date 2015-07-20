@@ -63,7 +63,7 @@ module Acapi
       def extract_payload(props, payload)
         properties = props.dup
         headers = properties.delete(:headers) || {}
-        properties.merge(headers).merge({:body => payload})
+        properties.merge(headers).merge({:body => payload, "x_no_rebroadcast" => true})
       end
 
       def to_response

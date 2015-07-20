@@ -56,7 +56,7 @@ module Acapi
 
     def log(name, started, finished, unique_id, data = {})
       open_connection_if_needed
-      if data.has_key?(:app_id) || data.has_key?("app_id")
+      if data.has_key?(:x_no_rebroadcast) || data.has_key?("x_no_rebroadcast")
         return
       end
       msg = Acapi::Amqp::OutMessage.new(@app_id, name, finished, finished, unique_id, data)

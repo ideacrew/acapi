@@ -35,9 +35,6 @@ module Acapi
       end
 
       def handle_message(app_id, di, props, body)
-        if app_id == props.app_id
-          return
-        end
         msg = ::Acapi::Amqp::InMessage.new(di, props, body)
         ActiveSupport::Notifications.publish(*msg.to_instrumented_event)
       end
