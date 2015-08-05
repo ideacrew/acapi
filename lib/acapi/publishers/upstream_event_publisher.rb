@@ -24,7 +24,7 @@ module Acapi
         chan = conn.create_channel
         chan.prefetch(1)
         begin
-          event_q = chan.queue(event_q_name, {:persistent => true})
+          event_q = chan.queue(event_q_name, {:durable => true})
           event_q.subscribe(:block => true, :manual_ack => true) do |delivery_info, properties, payload|
             handle_message(app_id, delivery_info, properties, payload)
             chan.acknowledge(delivery_info.delivery_tag, false)
