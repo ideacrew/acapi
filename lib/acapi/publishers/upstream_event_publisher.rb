@@ -9,7 +9,7 @@ module Acapi
       end
 
       def register_subscribers!
-        Rails.application.config.register_async_subscribers!
+        Rails.application.config.acapi.register_async_subscribers!
       end
 
       def run
