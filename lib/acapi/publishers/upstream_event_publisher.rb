@@ -26,7 +26,11 @@ module Acapi
         begin
           event_q = chan.queue(event_q_name, {:durable => true})
           event_q.subscribe(:block => true, :manual_ack => true) do |delivery_info, properties, payload|
-            handle_message(app_id, delivery_info, properties, payload)
+            begin
+              handle_message(app_id, delivery_info, properties, payload)
+            rescue => e
+              throw :terminate, e
+            end
             chan.acknowledge(delivery_info.delivery_tag, false)
           end
         ensure
