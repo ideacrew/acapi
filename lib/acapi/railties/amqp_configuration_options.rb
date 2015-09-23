@@ -3,6 +3,8 @@ module Acapi
     attr_accessor :remote_broker_uri
     attr_accessor :remote_event_queue
     attr_accessor :remote_request_exchange
+    attr_accessor :hbx_id
+    attr_accessor :environment_name
   end
 end
 

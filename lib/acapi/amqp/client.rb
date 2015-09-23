@@ -147,6 +147,10 @@ module Acapi
           end
         end
       end
+
+      def connection
+        @channel.connection
+      end
     end
   end
 end
