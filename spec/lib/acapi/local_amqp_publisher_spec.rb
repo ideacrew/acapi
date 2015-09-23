@@ -35,6 +35,7 @@ describe Acapi::LocalAmqpPublisher do
     end
 
     it "should establish a connection to the local broker" do
+      allow(exchange).to receive(:publish)
       expect(Bunny).to receive(:new).and_return(session)
       expect(session).to receive(:start)
       expect(session).to receive(:create_channel).and_return(channel)
@@ -42,14 +43,9 @@ describe Acapi::LocalAmqpPublisher do
     end
 
     it "should establish a persistent queue on the local broker" do
+      allow(exchange).to receive(:publish)
       expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable => true}).and_return(queue)
       subject.log(event_name, started_at, finished_at, message_id, {:app_id => "whatever"})
-    end
-
-    it "should filter out all messages which already have an :app_id" do
-      expect(queue).not_to receive(:publish)
-      subject.log(event_name, started_at, finished_at, message_id, {:app_id => "whatever"})
-      subject.log(event_name, started_at, finished_at, message_id, {"app_id" => "whatever"})
     end
 
     it "publishes with a routing key the same as the event name, just stripped of 'acapi.'" do
@@ -106,6 +102,7 @@ describe Acapi::LocalAmqpPublisher do
 
     it "supports reconnection for after_fork" do
       #publish to force the connection
+      allow(exchange).to receive(:publish)
       expect(session).to receive(:close)
       expect(Bunny).to receive(:new).and_return(session)
       expect(session).to receive(:start)
