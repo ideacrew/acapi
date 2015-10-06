@@ -1,5 +1,6 @@
 module Acapi
   module Publishers
+    include ::Acapi::Notifiers
     # In this class, we load the needed amqp connections and information to
     # listen for AMQP events, and then propagate them to the instrumentation.
     # The implementation is Forkr compatible.
@@ -29,7 +30,20 @@ module Acapi
             begin
               handle_message(app_id, delivery_info, properties, payload)
             rescue => e
-              throw :terminate, e
+              error_message = {
+                :error => {
+                  :message => e.message,
+                  :inspected => e.inspect,
+                  :backtrace => e.backtrace.join("\n")
+                },
+                :original_payload => payload,
+                :original_properties => properties.to_hash
+              }
+              log(
+                JSON.dump(error_message),
+                {:level => "critical"}
+              )
+              chan.nack(delivery_info.delivery_tag, false, true)
             end
             chan.acknowledge(delivery_info.delivery_tag, false)
           end
