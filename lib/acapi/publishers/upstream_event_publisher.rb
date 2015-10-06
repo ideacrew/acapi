@@ -30,6 +30,7 @@ module Acapi
           event_q.subscribe(:block => true, :manual_ack => true) do |delivery_info, properties, payload|
             begin
               handle_message(app_id, delivery_info, properties, payload)
+              chan.acknowledge(delivery_info.delivery_tag, false)
             rescue Exception => e
               begin
                 error_message = {
@@ -48,16 +49,15 @@ module Acapi
                 chan.nack(delivery_info.delivery_tag, false, true)
               rescue Exception => x
                 error_message = {
-                  :message => e.message,
-                  :inspected => e.inspect,
-                  :backtrace => e.backtrace.join("\n")
+                  :message => x.message,
+                  :inspected => x.inspect,
+                  :backtrace => x.backtrace.join("\n")
                 }
                 STDERR.puts("=======CRASH!=======")
                 STDERR.puts("Process Crashed: " + JSON.dump(error_message))
                 throw :terminate, x
               end
             end
-            chan.acknowledge(delivery_info.delivery_tag, false)
           end
         ensure
           conn.close
