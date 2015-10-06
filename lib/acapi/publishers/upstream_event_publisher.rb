@@ -46,7 +46,7 @@ module Acapi
                   JSON.dump(error_message),
                   {:level => "critical"}
                 )
-                chan.nack(delivery_info.delivery_tag, false, true)
+                chan.nack(delivery_info.delivery_tag, false, false)
               rescue Exception => x
                 error_message = {
                   :message => x.message,
