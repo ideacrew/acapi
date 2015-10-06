@@ -44,6 +44,8 @@ module Acapi
                 {:level => "critical"}
               )
               chan.nack(delivery_info.delivery_tag, false, true)
+            rescue Exception => x
+              throw :terminate, x
             end
             chan.acknowledge(delivery_info.delivery_tag, false)
           end
