@@ -1,10 +1,11 @@
 module Acapi
   module Publishers
-    include ::Acapi::Notifiers
     # In this class, we load the needed amqp connections and information to
     # listen for AMQP events, and then propagate them to the instrumentation.
     # The implementation is Forkr compatible.
     class UpstreamEventPublisher
+      include ::Acapi::Notifiers
+
       def initialize(&after_fork)
         @after_fork = after_fork
       end
