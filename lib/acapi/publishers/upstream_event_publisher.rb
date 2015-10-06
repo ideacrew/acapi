@@ -29,23 +29,25 @@ module Acapi
           event_q.subscribe(:block => true, :manual_ack => true) do |delivery_info, properties, payload|
             begin
               handle_message(app_id, delivery_info, properties, payload)
-            rescue => e
-              error_message = {
-                :error => {
-                  :message => e.message,
-                  :inspected => e.inspect,
-                  :backtrace => e.backtrace.join("\n")
-                },
-                :original_payload => payload,
-                :original_properties => properties.to_hash
-              }
-              log(
-                JSON.dump(error_message),
-                {:level => "critical"}
-              )
-              chan.nack(delivery_info.delivery_tag, false, true)
-            rescue Exception => x
-              throw :terminate, x
+            rescue Exception => e
+              begin
+                error_message = {
+                  :error => {
+                    :message => e.message,
+                    :inspected => e.inspect,
+                    :backtrace => e.backtrace.join("\n")
+                  },
+                  :original_payload => payload,
+                  :original_properties => properties.to_hash
+                }
+                log(
+                  JSON.dump(error_message),
+                  {:level => "critical"}
+                )
+                chan.nack(delivery_info.delivery_tag, false, true)
+              rescue Exception => x
+                throw :terminate, x
+              end
             end
             chan.acknowledge(delivery_info.delivery_tag, false)
           end
