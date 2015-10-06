@@ -47,6 +47,13 @@ module Acapi
                 )
                 chan.nack(delivery_info.delivery_tag, false, true)
               rescue Exception => x
+                error_message = {
+                  :message => e.message,
+                  :inspected => e.inspect,
+                  :backtrace => e.backtrace.join("\n")
+                }
+                STDERR.puts("=======CRASH!=======")
+                STDERR.puts("Process Crashed: " + JSON.dump(error_message))
                 throw :terminate, x
               end
             end
