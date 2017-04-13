@@ -19,6 +19,8 @@ describe Acapi::LocalAmqpPublisher do
     let(:message_id) { double }
     let(:other_property_1) { double }
     let(:other_property_2) { double }
+    let(:correlation_id) { double }
+    let(:reply_to) { double }
 
     let(:payload) { { 
       :other_property_1 => other_property_1,
@@ -72,6 +74,24 @@ describe Acapi::LocalAmqpPublisher do
         expect(body).to eql message_body_content
       end
       subject.log(event_name, started_at, finished_at, message_id, message_with_body)
+    end
+
+    it "supports reply_to as a property" do
+      expect(exchange).to receive(:publish) do |body, opts|
+        expect(body).to eql ""
+        expect(opts[:reply_to]).to eq reply_to 
+      end
+      message_with_reply_to = payload.merge(:reply_to => reply_to)
+      subject.log(event_name, started_at, finished_at, message_id, message_with_reply_to)
+    end
+
+    it "supports correlation id as a property" do
+      expect(exchange).to receive(:publish) do |body, opts|
+        expect(body).to eql ""
+        expect(opts[:correlation_id]).to eq correlation_id
+      end
+      message_with_correlation = payload.merge(:correlation_id => correlation_id)
+      subject.log(event_name, started_at, finished_at, message_id, message_with_correlation)
     end
 
     it "uses all other event properties as headers" do
