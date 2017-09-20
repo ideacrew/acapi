@@ -16,7 +16,7 @@ module Acapi
       end
     end
 
-    class LoggingPublisher 
+    class LoggingPublisher
       def log(*args)
         Rails.logger.info "Acapi::LocalAmqpPublisher - Logging subscribed event:\n#{args.inspect}"
       end
@@ -60,17 +60,24 @@ module Acapi
         return
       end
       msg = Acapi::Amqp::OutMessage.new(@app_id, name, finished, finished, unique_id, data)
+
       @exchange.publish(*msg.to_message_properties)
     end
 
     def open_connection_if_needed
       if !@connection
-        @connection = Bunny.new
-        @connection.start
-        @channel = @connection.create_channel
-        @queue = @channel.queue(QUEUE_NAME, {:durable => true})
-        @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
-        @queue.bind(@exchange, {})
+        begin
+          retries ||= 0
+          @connection = Bunny.new
+          @connection.start
+          @channel = @connection.create_channel
+          @queue = @channel.queue(QUEUE_NAME, {:durable => true})
+          @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
+          @queue.bind(@exchange, {})
+        rescue Bunny::TCPConnectionFailed => e
+          retry if (retries += 1) < 3
+          puts "logging"
+        end
       end
     end
 
@@ -93,7 +100,7 @@ module Acapi
     end
 
     def self.log(name, started, finished, unique_id, data)
-      instance.log(name, started, finished, unique_id, data)     
+      instance.log(name, started, finished, unique_id, data)
     end
   end
 end

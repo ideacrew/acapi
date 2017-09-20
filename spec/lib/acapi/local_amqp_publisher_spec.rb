@@ -22,7 +22,7 @@ describe Acapi::LocalAmqpPublisher do
     let(:correlation_id) { double }
     let(:reply_to) { double }
 
-    let(:payload) { { 
+    let(:payload) { {
       :other_property_1 => other_property_1,
       :other_property_2 => other_property_2,
     } }
@@ -34,6 +34,20 @@ describe Acapi::LocalAmqpPublisher do
       allow(channel).to receive(:queue).with(forwarding_queue_name, {:durable => true}).and_return(queue)
       allow(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
       allow(queue).to receive(:bind).with(exchange, {})
+    end
+
+    context "with a failed connection" do
+      before do
+        allow(session).to receive(:start).and_raise(Bunny::TCPConnectionFailed.new('connection failed'))
+      end
+
+      it "should try to establish a connection before calling publish" do
+        expect(Bunny).to receive(:new).and_return(session)
+        expect(session).to receive(:start)
+
+        subject.log(event_name, started_at, finished_at, message_id, {:app_id => "whatever"})
+      end
+
     end
 
     it "should establish a connection to the local broker" do
@@ -65,7 +79,7 @@ describe Acapi::LocalAmqpPublisher do
       end
       subject.log(event_name, started_at, finished_at, message_id, payload)
     end
-    
+
     it "uses the :body property of the event to populate the body of the message" do
       message_body_content = "a message body"
       message_body = double(:to_s => message_body_content)
@@ -79,7 +93,7 @@ describe Acapi::LocalAmqpPublisher do
     it "supports reply_to as a property" do
       expect(exchange).to receive(:publish) do |body, opts|
         expect(body).to eql ""
-        expect(opts[:reply_to]).to eq reply_to 
+        expect(opts[:reply_to]).to eq reply_to
       end
       message_with_reply_to = payload.merge(:reply_to => reply_to)
       subject.log(event_name, started_at, finished_at, message_id, message_with_reply_to)
@@ -107,7 +121,7 @@ describe Acapi::LocalAmqpPublisher do
       given_timestamp = "frank"
       expect(exchange).to receive(:publish) do |body, opts|
         expect(body).to eql ""
-        expect(opts[:headers][:submitted_timestamp]).to eq given_timestamp 
+        expect(opts[:headers][:submitted_timestamp]).to eq given_timestamp
       end
       subject.log(event_name, started_at, finished_at, message_id, payload.merge({:submitted_timestamp => given_timestamp}))
     end
