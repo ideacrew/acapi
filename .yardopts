@@ -1,0 +1,5 @@
+--main README.md
+--no-private
+lib/**/*.rb
+-
+LICENSE.txt

@@ -6,7 +6,11 @@ module Acapi
 end
 
 module Acapi
+  # :nodoc:
+  # @private
   module Railties
+    # :nodoc:
+    # @private
     class LocalAmqpPublisher < Rails::Railtie
 
       initializer "local_amqp_publisher.initialize_local_events" do |app|

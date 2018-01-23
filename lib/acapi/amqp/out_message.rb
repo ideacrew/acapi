@@ -3,6 +3,8 @@ require 'securerandom'
 module Acapi
   module Amqp
     class OutMessage 
+      AMQP_MESSAGE_PROPERTIES = [:correlation_id, :reply_to, :user_id, :content_type]
+
       def initialize(a_id, e_name, s_time, e_time, m_id, p = {})
         @app_id = a_id
         @event_name = e_name
@@ -15,13 +17,15 @@ module Acapi
 
       def extract_event_properties(message_data)
         other_amqp_props = {}
-        correlation_id = message_data.delete(:correlation_id)
-        if !correlation_id.blank?
-          other_amqp_props[:correlation_id] = correlation_id
-        end
-        reply_to_string = message_data.delete(:reply_to)
-        if !reply_to_string.blank?
-          other_amqp_props[:reply_to] = reply_to_string
+        AMQP_MESSAGE_PROPERTIES.each do |prop_sym|
+          if message_data.has_key?(prop_sym)
+            prop_val = message_data.delete(prop_sym)
+            other_amqp_props[prop_sym] = prop_val
+          end
+          if message_data.has_key?(prop_sym.to_s)
+            prop_val = message_data.delete(prop_sym.to_s)
+            other_amqp_props[prop_sym] = prop_val
+          end
         end
         other_amqp_props
       end

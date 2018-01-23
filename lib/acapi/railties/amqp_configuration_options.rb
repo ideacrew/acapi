@@ -8,14 +8,23 @@ module Acapi
   end
 end
 
-class Rails::Application::Configuration < Rails::Engine::Configuration
-  def acapi
-    @acapi ||= ::Acapi::ConfigurationSettings.new
+module Rails
+  class Application
+    class Configuration < Rails::Engine::Configuration
+      # @return [Acapi::ConfigurationSettings]
+      def acapi
+        @acapi ||= ::Acapi::ConfigurationSettings.new
+      end
+    end
   end
 end
 
 module Acapi
+  # :nodoc:
+  # @private
   module Railties
+    # :nodoc:
+    # @private
     class AmqpConfigurationSettings < Rails::Railtie
       config.after_initialize do |app|
         app_id = Rails.application.config.acapi.app_id

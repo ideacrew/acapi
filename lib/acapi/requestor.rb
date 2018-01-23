@@ -54,15 +54,21 @@ module Acapi
       end
     end
 
+    # :nodoc:
+    # @private
     def self.instance
       return nil if !defined?(@@instance)
       @@instance
     end
 
+    # :nodoc:
+    # @private
     def self.reconnect!
       instance.reconnect!
     end
 
+    # :nodoc:
+    # @private
     def self.disable!
       if instance
         instance.disconnect!
@@ -70,6 +76,8 @@ module Acapi
       @@instance = DoNothingRequestor.new
     end
 
+    # :nodoc:
+    # @private
     def self.boot!(app_id, uri, ex_name)
       @@instance = ::Acapi::Requestor::AmqpRequestor.new(app_id, uri)
     end
