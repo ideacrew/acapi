@@ -27,6 +27,9 @@ module Acapi
             other_amqp_props[prop_sym] = prop_val
           end
         end
+        if !other_amqp_props.has_key?(:correlation_id)
+          other_amqp_props[:correlation_id] = SecureRandom.uuid.gsub("-","")
+        end
         other_amqp_props
       end
 
