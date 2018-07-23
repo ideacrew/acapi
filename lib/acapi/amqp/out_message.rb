@@ -36,8 +36,8 @@ module Acapi
       def to_message_properties
         message_data = @payload.dup
         body_data = message_data.delete(:body)
-        if (!message_data.has_key?(:transaction_id)) && (!message_data.has_key?("transaction_id"))
-          message_data[:transaction_id] = SecureRandom.uuid.gsub("-","")
+        if (!message_data.has_key?(:workflow_id)) && (!message_data.has_key?("workflow_id"))
+          message_data[:workflow_id] = SecureRandom.uuid.gsub("-","")
         end
         body_data = body_data.nil? ? "" : body_data.to_s
         @end_time ||= Time.now
