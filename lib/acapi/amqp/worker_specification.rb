@@ -60,6 +60,14 @@ module Acapi
       end
 
       def execute_sneakers_config_against(kls)
+        routing_key_string = if routing_key.kind_of?(Array)
+          key_list = routing_key.map do |rk|
+            "\"#{routing_key}\""
+          end.join(",")
+          "[" + key_list + "]"
+        else
+          "\"#{routing_key}\""
+        end
         kls.class_eval(<<-RUBYCODE)
           include ::Sneakers::Worker
           from_queue("#{full_queue_name}", {
@@ -69,7 +77,7 @@ module Acapi
                :durable => true,
                :exchange => "#{exchange_name}",
                :exchange_options => { :type => "#{exchange_kind}", :durable => true },
-               :routing_key => "#{routing_key}",
+               :routing_key => #{routing_key_string},
                :handler => Sneakers::Handlers::Maxretry,
                :retry_timeout => #{retry_delay},
                :heartbeat => 5,
