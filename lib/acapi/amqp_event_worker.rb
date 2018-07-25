@@ -64,6 +64,7 @@ module Acapi
       Rails.application.config.acapi.register_amqp_workers!
       pid_file_location = File.join(File.expand_path(Rails.root), "pids", "sneakers.pid")
       worker_classes = Rails.application.config.acapi.sneakers_worker_classes
+      ensure_messaging_exchanges
       Sneakers.configure(
         :amqp => Rails.application.config.acapi.remote_broker_uri,
         :start_worker_delay => 0.2,
@@ -74,6 +75,10 @@ module Acapi
       Sneakers.logger.level = Logger::INFO
       runner = OneWorkerPerProcessRunner.new(worker_classes)
       runner.run
+    end
+
+    def self.ensure_messaging_exchanges
+      ::Acapi::Amqp::MessagingExchangeTopology.ensure_topology_exists(Rails.application.config.acapi.remote_broker_uri)
     end
   end
 end

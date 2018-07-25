@@ -18,6 +18,7 @@ require "acapi/local_amqp_publisher"
 
 require "acapi/sneakers_extensions"
 require "acapi/amqp/worker_specification"
+require "acapi/amqp/messaging_exchange_topology"
 require "acapi/amqp_event_worker"
 
 require "acapi/user_notification"
