@@ -23,6 +23,28 @@ module Acapi
         @kind = val
       end
 
+      def message_category=(val)
+        unless [:events, :requests, "events", "requests"].include?(val)
+          raise ArgumentError, "message_category must be either 'events' or 'requests'"
+        end
+        @message_category = val
+      end
+
+      def message_category
+        @message_category || :events
+      end
+
+      def message_category_for_exchange
+        case message_category
+        when "events", :events
+          :topic
+        when "requests", :requests
+          :requests
+        else
+          raise ArgumentError, "message_category must be either 'events' or 'requests'"
+        end
+      end
+
       def retry_count
         @retry_count || 5
       end
@@ -45,7 +67,7 @@ module Acapi
       def exchange_name
         hbx_id = Rails.application.config.acapi.hbx_id
         env_name = Rails.application.config.acapi.environment_name
-        "#{hbx_id}.#{env_name}.e.#{exchange_kind}.events"
+        "#{hbx_id}.#{env_name}.e.#{exchange_kind}.#{message_category_for_exchange.to_s}"
       end
 
       def full_queue_name

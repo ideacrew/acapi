@@ -28,7 +28,6 @@ module Acapi
           worker_class.new(nil, pool, { connection: config[:connection] })
         ]
 
-
         # if more than one worker this should be per worker
         # accumulate clients and consumers as well
         @workers.each do |worker|
