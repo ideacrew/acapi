@@ -37,7 +37,7 @@ module Acapi
       def message_category_for_exchange
         case message_category
         when "events", :events
-          :topic
+          :events
         when "requests", :requests
           :requests
         else
