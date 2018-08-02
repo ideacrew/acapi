@@ -11,7 +11,7 @@ module Acapi
       end
 
       def initialize(connection_string)
-        @connnection = Bunny.new(connection_string, :heartbeat => 15)
+        @connection = Bunny.new(connection_string, :heartbeat => 15)
         @connection.start
         @channel = @connection.create_channel
       end
