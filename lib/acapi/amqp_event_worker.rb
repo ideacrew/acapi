@@ -77,8 +77,9 @@ module Acapi
         :retry_max_times => 5,
         :retry_timeout => 5000
       )
-      Sneakers.logger.level = Logger::DEBUG
-      runner = OneWorkerPerProcessRunner.new(worker_classes)
+      Sneakers.logger.level = Logger::INFO
+      # runner = OneWorkerPerProcessRunner.new(worker_classes)
+      runner = Sneakers::Runner.new(worker_classes)
       runner.run
     end
 
