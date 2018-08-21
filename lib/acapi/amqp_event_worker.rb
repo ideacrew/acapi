@@ -70,6 +70,7 @@ module Acapi
         :start_worker_delay => 0.2,
         :heartbeat => 5,
         :log => STDOUT,
+        :log_stdout => true,
         :pid_path => pid_file_location,
         :handler => Sneakers::Handlers::Maxretry,
         :ack => true,
