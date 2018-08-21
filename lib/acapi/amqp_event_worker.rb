@@ -70,7 +70,8 @@ module Acapi
         :start_worker_delay => 0.2,
         :heartbeat => 5,
         :log => STDOUT,
-        :pid_path => pid_file_location
+        :pid_path => pid_file_location,
+        :handler => Sneakers::Handlers::Maxretry
       )
       Sneakers.logger.level = Logger::INFO
       runner = OneWorkerPerProcessRunner.new(worker_classes)
