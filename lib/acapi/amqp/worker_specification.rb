@@ -99,7 +99,7 @@ module Acapi
           from_queue("#{full_queue_name}", {
                :ack => true,
                :prefetch => 1,
-               :threads => 1,
+               :threads => 2,
                :durable => true,
                :exchange => "#{exchange_name}",
                :exchange_type => "#{exchange_kind}",

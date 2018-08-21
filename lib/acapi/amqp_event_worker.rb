@@ -66,6 +66,7 @@ module Acapi
       worker_classes = Rails.application.config.acapi.sneakers_worker_classes
       ensure_messaging_exchanges
       Sneakers.configure(
+        :workers => worker_classes.length,
         :amqp => Rails.application.config.acapi.remote_broker_uri,
         :start_worker_delay => 0.2,
         :heartbeat => 5,
@@ -78,8 +79,8 @@ module Acapi
         :retry_timeout => 5000
       )
       Sneakers.logger.level = Logger::INFO
-      # runner = OneWorkerPerProcessRunner.new(worker_classes)
-      runner = Sneakers::Runner.new(worker_classes)
+      runner = OneWorkerPerProcessRunner.new(worker_classes)
+      # runner = Sneakers::Runner.new(worker_classes)
       runner.run
     end
 
