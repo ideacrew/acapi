@@ -8,6 +8,7 @@ module Acapi
       attr_accessor :routing_key
       attr_writer :retry_count
       attr_writer :retry_delay
+      attr_writer :worker_timeout
       attr_accessor :queue_name
 
       def initialize(args = {})
@@ -32,6 +33,10 @@ module Acapi
 
       def message_category
         @message_category || :events
+      end
+
+      def worker_timeout
+        @worker_timeout || "nil"
       end
 
       def message_category_for_exchange
@@ -107,6 +112,7 @@ module Acapi
                :routing_key => #{routing_key_string},
                :handler => Sneakers::Handlers::Maxretry,
                :retry_timeout => #{retry_delay},
+               :timeout_job_after => #{worker_timeout},
                :heartbeat => 5,
                :retry_max_times => #{retry_count},
                :arguments => {
