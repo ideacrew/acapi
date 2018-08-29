@@ -74,7 +74,7 @@ module Acapi
         :pid_path => pid_file_location,
         :handler => Sneakers::Handlers::Maxretry,
         :ack => true,
-        :timeout_job_after => nil,
+        :timeout_job_after => 86400,
         :retry_max_times => 5,
         :retry_timeout => 5000
       )

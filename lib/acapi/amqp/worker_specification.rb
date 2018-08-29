@@ -8,7 +8,6 @@ module Acapi
       attr_accessor :routing_key
       attr_writer :retry_count
       attr_writer :retry_delay
-      attr_writer :worker_timeout
       attr_accessor :queue_name
 
       def initialize(args = {})
@@ -35,8 +34,19 @@ module Acapi
         @message_category || :events
       end
 
+      def worker_timeout=(val)
+        @worker_timeout_set = true
+        @worker_timeout = val
+      end
+
       def worker_timeout
-        @worker_timeout || "nil"
+        if @worker_timeout_set
+          # Give the explicit string "nil" for subsitution,
+          # since nil.to_s would incorrectly be ""
+          @worker_timeout || "nil"
+        else
+          86400
+        end
       end
 
       def message_category_for_exchange
