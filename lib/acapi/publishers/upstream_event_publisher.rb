@@ -29,6 +29,7 @@ module Acapi
           event_q = chan.queue(event_q_name, {:durable => true})
           event_q.subscribe(:block => true, :manual_ack => true) do |delivery_info, properties, payload|
             begin
+              payload.force_encoding('UTF-8')
               handle_message(app_id, delivery_info, properties, payload)
               chan.acknowledge(delivery_info.delivery_tag, false)
             rescue Exception => e
