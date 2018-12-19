@@ -29,7 +29,6 @@ module Acapi
           event_q = chan.queue(event_q_name, {:durable => true})
           event_q.subscribe(:block => true, :manual_ack => true) do |delivery_info, properties, payload|
             begin
-              payload.force_encoding('UTF-8')
               handle_message(app_id, delivery_info, properties, payload)
               chan.acknowledge(delivery_info.delivery_tag, false)
             rescue Exception => e
@@ -48,6 +47,21 @@ module Acapi
                   {:level => "critical"}
                 )
                 chan.nack(delivery_info.delivery_tag, false, false)
+              rescue Encoding::UndefinedConversionError
+                error_message = {
+                  :error => {
+                    :message => e.message,
+                    :inspected => e.inspect,
+                    :backtrace => e.backtrace.join("\n")
+                  },
+                  :original_payload => payload.encode('UTF-8', :invalid => :replace, :undef => :replace, :replace => "\uFFFD"),
+                  :original_properties => properties.to_hash
+                }
+                log(
+                  JSON.dump(error_message),
+                  {:level => "critical"}
+                )
+                chan.acknowledge(delivery_info.delivery_tag, false)
               rescue Exception => x
                 error_message = {
                   :message => x.message,
