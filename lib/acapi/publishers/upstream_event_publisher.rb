@@ -47,6 +47,21 @@ module Acapi
                   {:level => "critical"}
                 )
                 chan.nack(delivery_info.delivery_tag, false, false)
+              rescue Encoding::UndefinedConversionError
+                error_message = {
+                  :error => {
+                    :message => e.message,
+                    :inspected => e.inspect,
+                    :backtrace => e.backtrace.join("\n")
+                  },
+                  :original_payload => payload.encode('UTF-8', :invalid => :replace, :undef => :replace, :replace => "\uFFFD"),
+                  :original_properties => properties.to_hash
+                }
+                log(
+                  JSON.dump(error_message),
+                  {:level => "critical"}
+                )
+                chan.acknowledge(delivery_info.delivery_tag, false)
               rescue Exception => x
                 error_message = {
                   :message => x.message,
