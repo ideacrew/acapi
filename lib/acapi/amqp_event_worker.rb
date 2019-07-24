@@ -1,5 +1,6 @@
 require "sneakers"
 require "sneakers/runner"
+require "sneakers/handlers/maxretry"
 
 module Acapi
   class AmqpEventWorker

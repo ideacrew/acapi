@@ -7,9 +7,11 @@ module Acapi
       sub_name.constantize
     end
 
-    def add_amqp_worker(worker)
+    def add_amqp_worker(worker, count = 1)
       @amqp_event_workers ||= []
-      @amqp_event_workers << worker
+      count.times do
+        @amqp_event_workers << worker
+      end
       @amqp_event_workers.uniq!
     end
 
