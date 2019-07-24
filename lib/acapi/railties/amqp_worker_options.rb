@@ -12,7 +12,6 @@ module Acapi
       count.times do
         @amqp_event_workers << worker
       end
-      @amqp_event_workers.uniq!
     end
 
     # :nodoc:
