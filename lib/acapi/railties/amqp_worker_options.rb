@@ -24,9 +24,14 @@ module Acapi
     def register_amqp_workers!
       @amqp_event_workers ||= []
       @sneakers_worker_classes = []
+      already_registered_workers = Array.new
       @amqp_event_workers.each do |sub|
         worker_class = constantize_worker_class(sub)
-        worker_class.worker_specification.execute_sneakers_config_against(worker_class)
+        # Only perform the module inclusion once.
+        if !already_registered_workers.include?(sub)
+          worker_class.worker_specification.execute_sneakers_config_against(worker_class)
+          already_registered_workers << sub
+        end
         @sneakers_worker_classes << worker_class
       end
     end
