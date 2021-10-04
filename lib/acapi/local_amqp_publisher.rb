@@ -64,14 +64,13 @@ module Acapi
     end
 
     def open_connection_if_needed
-      if !@connection
-        @connection = Bunny.new
-        @connection.start
-        @channel = @connection.create_channel
-        @queue = @channel.queue(QUEUE_NAME, {:durable => true})
-        @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
-        @queue.bind(@exchange, {})
-      end
+      return if @connection.present? && @connection.connected?
+      @connection = Bunny.new
+      @connection.start
+      @channel = @connection.create_channel
+      @queue = @channel.queue(QUEUE_NAME, {:durable => true})
+      @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
+      @queue.bind(@exchange, {})
     end
 
     def reconnect!
