@@ -14,9 +14,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: vendor/bundle
-        key: ${{ runner.os }}-openhbx_cv2-${{ hashFiles('**/Gemfile.lock') }}
+        key: ${{ runner.os }}-acapi-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
-          ${{ runner.os }}-openhbx_cv2-${{ hashFiles('**/Gemfile.lock') }}
+          ${{ runner.os }}-acapi-${{ hashFiles('**/Gemfile.lock') }}
     - name: Install Gems
       run: |
         sudo gem install bundler -v '1.17.3'
