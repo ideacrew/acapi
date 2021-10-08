@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activesupport", "> 4.2.0"
-  spec.add_dependency "bunny", '~> 2.14.0'
+  spec.add_dependency "bunny", "~> 1.7.0"
   spec.add_dependency "sneakers"
 
   spec.add_development_dependency "bundler"
