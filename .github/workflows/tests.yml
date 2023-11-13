@@ -4,19 +4,19 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.3
+        ruby-version: 2.6.3
     - name: Cache Gems
       uses: actions/cache@v1
       with:
         path: vendor/bundle
-        key: ${{ runner.os }}-acapi-${{ hashFiles('**/Gemfile.lock') }}
+        key: ${{ runner.os }}-acapi-2.6.3-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
-          ${{ runner.os }}-acapi-${{ hashFiles('**/Gemfile.lock') }}
+          ${{ runner.os }}-acapi-2.6.3-${{ hashFiles('**/Gemfile.lock') }}
     - name: Install Gems
       run: |
         sudo gem install bundler -v '1.17.3'
