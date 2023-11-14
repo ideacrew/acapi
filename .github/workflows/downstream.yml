@@ -9,13 +9,13 @@ jobs:
   check-dependencies:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger IC Dependency check-dependencies
-        uses: benc-uk/workflow-dispatch@v1
+      - name: Trigger IC Dependency Check
+        uses: peter-evans/repository-dispatch@v2
         with:
-          workflow: test_bundle.yml
-          ref: trunk
+          event-type: acapi_update
           repo: ideacrew/ic_dependency_jamboree
           token: ${{ secrets.GH_PAT }}
+          client-payload: '{"ref": "trunk"}'
         
 
 
