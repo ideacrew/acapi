@@ -1,0 +1,21 @@
+name: Downstream
+
+on:
+  push:
+    branches:
+      - trunk
+
+jobs:
+  check-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger IC Dependency check-dependencies
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: test_bundle.yml
+          ref: trunk
+          repo: ideacrew/ic_dependency_jamboree
+          token: ${{ secrets.GH_PAT }}
+        
+
+
