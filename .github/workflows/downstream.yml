@@ -10,7 +10,16 @@ on:
 
 jobs:
   check-dependencies:
-    uses: ideacrew/ic_dependency_jamboree/.github/workflows/test_bundle.yml@trunk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bundle Dependency Checks
+        uses: convictional/trigger-workflow-and-wait@v1.6.1
+        with:
+            owner: ideacrew
+            repo: ic_dependency_jamboree
+            github_token: ${{ secrets.GH_PAT }}
+            workflow_file_name: test_bundle.yml
+            ref: trunk
         
 
 
