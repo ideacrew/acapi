@@ -13,7 +13,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           event-type: acapi_update
-          repo: ideacrew/ic_dependency_jamboree
+          repository: ideacrew/ic_dependency_jamboree
           token: ${{ secrets.GH_PAT }}
           client-payload: '{"ref": "trunk"}'
         
