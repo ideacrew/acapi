@@ -1,6 +1,9 @@
 name: Downstream
 
 on:
+  workflow_dispatch:
+    branches:
+      - trunk
   push:
     branches:
       - trunk
