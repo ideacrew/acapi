@@ -7,15 +7,9 @@ on:
 
 jobs:
   check-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger IC Dependency Check
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          event-type: acapi_update
-          repository: ideacrew/ic_dependency_jamboree
-          token: ${{ secrets.GH_PAT }}
-          client-payload: '{"ref": "trunk"}'
+    uses: ideacrew/ic_dependency_jamboree/.github/workflows/test_bundle.yml@trunk
+    secrets:
+      token: ${{ secrets.GH_PAT }}
         
 
 
