@@ -11,8 +11,6 @@ on:
 jobs:
   check-dependencies:
     uses: ideacrew/ic_dependency_jamboree/.github/workflows/test_bundle.yml@trunk
-    secrets:
-      token: ${{ secrets.GH_PAT }}
         
 
 
