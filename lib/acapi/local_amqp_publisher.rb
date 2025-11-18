@@ -68,7 +68,7 @@ module Acapi
       @connection = Bunny.new
       @connection.start
       @channel = @connection.create_channel
-      @queue = @channel.queue(QUEUE_NAME, {:durable => true})
+      @queue = @channel.queue(QUEUE_NAME, {:durable => true,  :arguments => {'x-queue-type' => 'quorum'}})
       @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
       @queue.bind(@exchange, {})
     end

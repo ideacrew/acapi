@@ -126,7 +126,8 @@ module Acapi
                :heartbeat => 5,
                :retry_max_times => #{retry_count},
                :arguments => {
-                 :'x-dead-letter-exchange' => "#{retry_exchange_name}"
+                 :'x-dead-letter-exchange' => "#{retry_exchange_name}",
+                 :'x-queue-type' => 'quorum'
                }
           })
         RUBYCODE
