@@ -20,7 +20,7 @@ describe Acapi::Subscribers::Logger do
       allow(Acapi::LocalAmqpPublisher).to receive(:log).and_raise("error")
 
       Acapi::Subscribers::Logger.register("acapi.logger") 
-      expect{logger("hello")}.to raise_error 
+      expect{logger("hello")}.to raise_error(StandardError)
     end
   end
 end

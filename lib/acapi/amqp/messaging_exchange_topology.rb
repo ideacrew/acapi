@@ -4,14 +4,14 @@ module Acapi
   module Amqp
     class MessagingExchangeTopology
 
-      def self.ensure_topology_exists(connection_string)
-        topology = new(connection_string)
+      def self.ensure_topology_exists(connection_settings)
+        topology = new(connection_settings)
         topology.setup
         topology.close
       end
 
-      def initialize(connection_string)
-        @connection = Bunny.new(connection_string, :heartbeat => 15)
+      def initialize(connection_settings)
+        @connection = Bunny.new(connection_settings)
         @connection.start
         @channel = @connection.create_channel
       end

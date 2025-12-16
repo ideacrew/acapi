@@ -68,11 +68,11 @@ module Acapi
       pid_file_location = File.join(File.expand_path(Rails.root), "pids", "sneakers.pid")
       worker_classes = Rails.application.config.acapi.sneakers_worker_classes
       ensure_messaging_exchanges
+      connection = Bunny.new(Rails.application.config.acapi.to_connection_settings)
       Sneakers.configure(
         :workers => worker_classes.length,
-        :amqp => Rails.application.config.acapi.remote_broker_uri,
+        :connection => connection,
         :start_worker_delay => 0.2,
-        :heartbeat => 5,
         :log => STDOUT,
         :pid_path => pid_file_location,
         :handler => Sneakers::Handlers::Maxretry,
@@ -88,7 +88,7 @@ module Acapi
     end
 
     def self.ensure_messaging_exchanges
-      ::Acapi::Amqp::MessagingExchangeTopology.ensure_topology_exists(Rails.application.config.acapi.remote_broker_uri)
+      ::Acapi::Amqp::MessagingExchangeTopology.ensure_topology_exists(Rails.application.config.acapi.to_connection_settings)
     end
   end
 end

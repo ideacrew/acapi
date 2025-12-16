@@ -2,6 +2,8 @@ require "acapi/version"
 require "active_support"
 
 require "acapi/config"
+require "acapi/errors"
+
 require "acapi/notifiers"
 require "acapi/publisher"
 require "acapi/subscriber"

@@ -17,7 +17,7 @@ module Acapi
         begin
           chan.confirm_select
           yield chan
-          chan.wait_for_confirms
+          chan.wait_for_confirms || raise(Acapi::Errors::PublishConfirmationFailedError, "message publication could not be confirmed")
         ensure
           chan.close
         end
