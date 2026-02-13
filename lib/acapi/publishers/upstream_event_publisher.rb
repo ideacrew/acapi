@@ -18,10 +18,9 @@ module Acapi
         if @after_fork
           @after_fork.call
         end
-        bunny_url = Rails.application.config.acapi.remote_broker_uri
         event_q_name = Rails.application.config.acapi.remote_event_queue
         app_id = Rails.application.config.acapi.app_id
-        conn = Bunny.new(bunny_url, :heartbeat => 15)
+        conn = Bunny.new(Rails.application.config.acapi.to_connection_settings)
         conn.start
         chan = conn.create_channel
         chan.prefetch(1)

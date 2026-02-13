@@ -12,6 +12,9 @@ module Acapi
         @argument_errors = []
         @bad_argument_queue = "acapi.error.middleware.service.bad_arguments"
         @processing_failed_queue = "acapi.error.middleware.service.processing_failed"
+        @republish_channel = @channel.connection.create_channel
+        @republish_channel.confirm_select
+        @republish_queue = @republish_channel.queue(@queue.name, @queue.options)
         @exit_after_work = false
       end
 
@@ -102,7 +105,8 @@ module Acapi
                 publish_processing_failed(delivery_info, properties, payload, e)
               else
                 new_properties = redelivery_properties(existing_retry_count, delivery_info, properties)
-                queue.publish(payload, new_properties)
+                @republish_queue.publish(payload, new_properties)
+                @republish_channel.wait_for_confirms || raise(Acapi::Errors::PublishConfirmationFailedError, "message republication could not be confirmed")
                 channel.acknowledge(delivery_info.delivery_tag, false)
               end
             rescue => e

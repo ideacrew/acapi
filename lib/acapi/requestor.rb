@@ -32,15 +32,14 @@ module Acapi
       end
 
       def open_connection_for_request
-        if !@connection
-          @connection = Bunny.new(@uri, :heartbeat => 15)
-          @connection.start
-        end
+        return if @connection.present? && @connection.connected?
+        @connection = Bunny.new(@uri)
+        @connection.start
       end
 
       def reconnect!
         disconnect!
-        @connection = Bunny.new(@uri, :heartbeat => 15)
+        @connection = Bunny.new(@uri)
         @connection.start
       end
 

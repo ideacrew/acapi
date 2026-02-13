@@ -61,16 +61,23 @@ module Acapi
       end
       msg = Acapi::Amqp::OutMessage.new(@app_id, name, finished, finished, unique_id, data)
       @exchange.publish(*msg.to_message_properties)
+      @p_channel.wait_for_confirms || raise(Acapi::Errors::PublishConfirmationFailedError, "message publication could not be confirmed")
     end
 
     def open_connection_if_needed
       return if @connection.present? && @connection.connected?
-      @connection = Bunny.new
+      @connection = Bunny.new(connection_url)
       @connection.start
       @channel = @connection.create_channel
       @queue = @channel.queue(QUEUE_NAME, {:durable => true})
-      @exchange = @channel.fanout(EXCHANGE_NAME, {:durable => true})
+      @p_channel = @connection.create_channel
+      @p_channel.confirm_select
+      @exchange = @p_channel.fanout(EXCHANGE_NAME, {:durable => true})
       @queue.bind(@exchange, {})
+    end
+
+    def connection_url
+      Rails.application.config.acapi.to_connection_settings
     end
 
     def reconnect!
@@ -83,6 +90,10 @@ module Acapi
           @connection.close
         rescue Timeout::Error
         end
+        @queue = nil
+        @channel = nil
+        @p_channel = nil
+        @exchange = nil
         @connection = nil
       end
     end

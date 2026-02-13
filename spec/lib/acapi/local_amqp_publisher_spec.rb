@@ -4,6 +4,13 @@ describe Acapi::LocalAmqpPublisher do
   let(:forwarding_queue_name) { "acapi.queue.events.local" }
   let(:forwarding_exchange_name ) { "acapi.exchange.events.local" }
 
+  before :each do
+    Rails.application.config.acapi.remote_broker_uri = "amqp://localhost:5672"
+  end
+
+  after :each do
+    Rails.application.config.acapi.clear!
+  end
 
   describe "which publishes messages" do
     let(:session) { instance_double("Bunny::Session") }
@@ -28,11 +35,19 @@ describe Acapi::LocalAmqpPublisher do
     } }
 
     before :each do
-      allow(Bunny).to receive(:new).and_return(session)
+      allow(Bunny).to receive(:new).with({
+        :heartbeat => 10,
+        :host=>"localhost",
+        :password=>"guest",
+        :port=>5672,
+        :username=>"guest"
+      }).and_return(session)
       allow(session).to receive(:start)
       allow(session).to receive(:create_channel).and_return(channel)
       allow(channel).to receive(:queue).with(forwarding_queue_name, {:durable => true}).and_return(queue)
       allow(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
+      allow(channel).to receive(:confirm_select)
+      allow(channel).to receive(:wait_for_confirms).and_return(true)
       allow(queue).to receive(:bind).with(exchange, {})
     end
 
@@ -123,10 +138,18 @@ describe Acapi::LocalAmqpPublisher do
     it "supports reconnection for after_fork" do
       #publish to force the connection
       allow(exchange).to receive(:publish)
+      allow(channel).to receive(:confirm_select)
+      allow(channel).to receive(:wait_for_confirms).and_return(true)
       expect(session).to receive(:close)
-      expect(Bunny).to receive(:new).and_return(session)
+      expect(Bunny).to receive(:new).with({
+        :heartbeat => 10,
+        :host=>"localhost",
+        :password=>"guest",
+        :port=>5672,
+        :username=>"guest"
+      }).and_return(session)
       expect(session).to receive(:start)
-      expect(session).to receive(:create_channel).and_return(channel)
+      allow(session).to receive(:create_channel).and_return(channel)
       expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable=> true}).and_return(queue)
       expect(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
       expect(queue).to receive(:bind).with(exchange, {})
