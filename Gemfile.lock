@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    acapi (1.3.4)
+    acapi (1.6.0)
       activesupport (> 4.2.0)
       bunny (>= 1.7.0, < 3)
       sneakers
