@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Enterprise communication onramp to Affordable Care Act API (ACApi)}
   spec.description   = %q{Publish and subscribe to ACApi cross-application events, services and logging.}
   spec.homepage      = ""
-  spec.license       = "MIT"
+  spec.license       = "LicenseRef-LICENSE.txt"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.test_files    = `git ls-files -- spec/*`.split("\n")
