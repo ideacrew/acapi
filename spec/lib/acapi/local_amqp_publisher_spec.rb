@@ -14,7 +14,7 @@ describe Acapi::LocalAmqpPublisher do
 
   describe "which publishes messages" do
     let(:session) { instance_double("Bunny::Session") }
-    let(:channel) { instance_double("Bunny::Channel") }
+    let(:channel) { instance_double("Bunny::Channel", close: true) }
     let(:queue) { instance_double("Bunny::Queue") }
     let(:exchange) { instance_double("Bunny::Exchange") }
     let(:app_id) { "my app" }
@@ -130,7 +130,7 @@ describe Acapi::LocalAmqpPublisher do
 
   describe "that can support unicorn" do
     let(:session) { instance_double("Bunny::Session") }
-    let(:channel) { instance_double("Bunny::Channel") }
+    let(:channel) { instance_double("Bunny::Channel", close: true) }
     let(:queue) { instance_double("Bunny::Queue") }
     let(:exchange) { instance_double("Bunny::Exchange") }
     subject { ::Acapi::LocalAmqpPublisher.new("some app id") }
@@ -151,6 +151,7 @@ describe Acapi::LocalAmqpPublisher do
       expect(session).to receive(:start)
       allow(session).to receive(:create_channel).and_return(channel)
       expect(channel).to receive(:queue).with(forwarding_queue_name, {:durable=> true}).and_return(queue)
+      expect(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
       expect(channel).to receive(:fanout).with(forwarding_exchange_name, {:durable => true}).and_return(exchange)
       expect(queue).to receive(:bind).with(exchange, {})
       subject.log("", nil, nil, nil, {:app_id => "some app id"})

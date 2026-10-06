@@ -60,8 +60,19 @@ module Acapi
         return
       end
       msg = Acapi::Amqp::OutMessage.new(@app_id, name, finished, finished, unique_id, data)
-      @exchange.publish(*msg.to_message_properties)
-      @p_channel.wait_for_confirms || raise(Acapi::Errors::PublishConfirmationFailedError, "message publication could not be confirmed")
+      publish_on_confirmable_channel(msg)
+    end
+
+    def publish_on_confirmable_channel(msg)
+      p_chan = @connection.create_channel
+      begin
+        p_chan.confirm_select
+        p_exchange = p_chan.fanout(EXCHANGE_NAME, {:durable => true})
+        p_exchange.publish(*msg.to_message_properties)
+        p_chan.wait_for_confirms || raise(Acapi::Errors::PublishConfirmationFailedError, "message publication could not be confirmed")
+      ensure
+        p_chan.close
+      end
     end
 
     def open_connection_if_needed
